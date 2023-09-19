@@ -1,0 +1,271 @@
+:root {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  --navbar-bg: rgb(38, 8, 120);
+  font-family: "Poppins", sans-serif;
+}
+
+$text-indent: 0.5rem;
+$text-fontSize: 1.2rem;
+$pink-theme: #d83f87;
+$black-theme: #2a1b3d;
+$violet-theme: #44318d;
+$lavendar-theme: #8265a7;
+$green-theme: #a4b3b6;
+$border: 5px solid white;
+
+body {
+  width: 100vw;
+  height: 100vh;
+  background-color: $black-theme;
+}
+
+input {
+  outline: none;
+  box-shadow: none;
+  background: transparent;
+  border-width: 0 0 1.3px 0;
+  border-color: slategray;
+  padding: $text-indent;
+  font-size: $text-fontSize;
+  color: white;
+}
+
+input::placeholder {
+  color: white;
+  opacity: 50%;
+}
+
+button {
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  transform: scale(1.1);
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  background-color: transparent;
+}
+
+.container {
+  display: grid;
+  place-items: center;
+}
+
+.modal-link {
+  color: $pink-theme;
+}
+
+// * Navbar.jsx //
+
+.navbar {
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: space-between;
+  width: 100vw;
+  background-color: $pink-theme;
+  p {
+    padding-left: 1rem;
+    font-weight: 800;
+    font-size: 3rem;
+    color: $violet-theme;
+  }
+  li {
+    list-style-type: none;
+  }
+  button {
+    width: fit-content;
+    height: 3rem;
+    background: transparent;
+    place-self: center;
+    padding-right: 3rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: white;
+  }
+}
+
+// * TodoInput.jsx //
+
+.todoInput {
+  width: 48rem;
+  border-radius: 10px;
+  padding: 1.2rem;
+  margin-top: 2rem;
+  background-color: $violet-theme;
+  border: $border;
+  form {
+    display: grid;
+    grid-template-columns: 6fr 1fr;
+  }
+  p {
+    font-size: $text-fontSize;
+    font-weight: 600;
+  }
+  .options {
+    grid-column-start: 1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 8fr 1fr;
+    gap: 1rem;
+  }
+  button {
+    grid-row-start: 1;
+    grid-row-end: 3;
+    grid-column-start: 2;
+    border: none;
+    border-radius: 5px;
+    margin-left: 0.8rem;
+    font-size: 1.2rem;
+    background: transparent;
+  }
+  img {
+    height: 100%;
+  }
+  input {
+    color: white;
+  }
+  .form-control {
+    font-family: system-ui, sans-serif;
+    font-size: 2rem;
+    display: grid;
+    align-self: center;
+  }
+  input[type="checkbox"] {
+    appearance: none;
+    background-color: #fff;
+    margin: 0;
+    font: inherit;
+    color: currentColor;
+    width: 1.15em;
+    height: 1.15em;
+    border: $border;
+    border-radius: 0.15em;
+    transform: translateY(-0.075em);
+    display: grid;
+    place-content: center;
+  }
+  input[type="checkbox"]::before {
+    content: "";
+    width: 0.65em;
+    height: 0.65em;
+    transform: scale(0);
+    transition: 120ms transform ease-in-out;
+    box-shadow: inset 1em 1em $pink-theme;
+  }
+  input[type="checkbox"]:checked::before {
+    transform: scale(1);
+  }
+  fieldset {
+    border: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    height: 100%;
+  }
+}
+
+// * TodoItem.jsx //
+
+.todoItem {
+  display: grid;
+  border: $border;
+  grid-template-columns: 4fr 1fr;
+  margin-top: 2rem;
+  padding: 1rem;
+  border: $border;
+  border-radius: 5px;
+  background-color: $green-theme;
+  width: 40rem;
+
+  .options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+  button {
+    background: transparent;
+    border: none;
+  }
+  img {
+    height: 30px;
+  }
+  .options {
+    margin-left: 1rem;
+  }
+
+  .urgent-glow {
+    border: 2px solid $pink-theme;
+    box-shadow: 0 0 5px #ff0000, 0 0 10px #ff0000, 0 0 15px #ff4000,
+      0 0 20px #ff6000, 0 0 25px #ff8000, 0 0 30px #ff8000, 0 0 35px #ff8000;
+  }
+}
+
+// * LoginModal.jsx //
+
+.loginModal,
+.signupModal {
+  border: $border;
+  margin: 3rem;
+  color: white;
+  .show {
+    min-height: 40vh;
+    min-width: 35vw;
+    top: 50%;
+    left: 50%;
+    display: grid;
+    position: fixed;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(25px);
+    transform: translate(-50%, -50%);
+    background-color: rgba(40, 40, 40, 0.65);
+    box-shadow: rgba(242, 238, 238, 0.16) 0px 3px 6px,
+      rgba(255, 255, 255, 0.23) 0px 3px 6px;
+    border-radius: 5px;
+  }
+  form {
+    display: grid;
+    gap: 2rem;
+    padding: 7rem;
+  }
+  fieldset {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-rows: repeat(2, 1fr);
+    border: none;
+  }
+  .close {
+    top: 1px;
+    right: 5px;
+    border: none;
+    font-size: 26px;
+    cursor: pointer;
+    background: none;
+    position: absolute;
+    color: $pink-theme;
+    font-weight: 600;
+  }
+  button {
+    background-color: transparent;
+    color: white;
+    font-weight: 600;
+    border: $border;
+    border-radius: 5px;
+    padding: 1rem;
+    font-size: 1.3rem;
+  }
+  .signup {
+    text-align: center;
+  }
+  a {
+    color: $pink-theme;
+  }
+}

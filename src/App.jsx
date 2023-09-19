@@ -1,35 +1,44 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { createContext, useEffect, useState } from "react";
+import Navbar from "./components/Navbar";
+import { LoginModal } from "./components/LoginModal";
+import { TodoInput } from "./components/TodoInput";
+import { TodoItem } from "./components/TodoItem";
+import { SignupModal } from "./components/SignupModal";
+import fetchActiveUser from "./utils/fetchActiveUser";
+import fetchUsername from "./utils/fetchUsername";
 
-function App() {
-  const [count, setCount] = useState(0)
+export const DataContext = createContext();
+
+const App = () => {
+  const [activeUserId, setActiveUserId] = useState("");
+  const [activeUser, setActiveUser] = useState("");
+  const [activeUsername, setActiveUsername] = useState("");
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showSignupModal, setShowSignupModal] = useState(false);
+
+  fetchActiveUser(setActiveUser, setActiveUserId);
+  fetchUsername(activeUserId, setActiveUsername);
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <DataContext.Provider
+      value={{
+        activeUser,
+        activeUsername,
+        setShowLoginModal,
+        setShowSignupModal,
+        setActiveUser,
+        setActiveUsername,
+      }}
+    >
+      <div className="container">
+        <Navbar />
+        <TodoInput />
+        <TodoItem />
+        {showLoginModal ? <LoginModal /> : null}
+        {showSignupModal ? <SignupModal /> : null}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    </DataContext.Provider>
+  );
+};
 
-export default App
+export default App;
