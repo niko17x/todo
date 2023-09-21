@@ -2,10 +2,10 @@ import { createContext, useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
 import { LoginModal } from "./components/LoginModal";
 import { TodoInput } from "./components/TodoInput";
-import { TodoItem } from "./components/TodoItem";
 import { SignupModal } from "./components/SignupModal";
 import fetchActiveUser from "./utils/fetchActiveUser";
 import fetchUsername from "./utils/fetchUsername";
+import { MappedTodoItems } from "./components/MappedTodoItems";
 
 export const DataContext = createContext();
 
@@ -16,7 +16,10 @@ const App = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
 
-  fetchActiveUser(setActiveUser, setActiveUserId);
+  useEffect(() => {
+    fetchActiveUser(setActiveUser, setActiveUserId);
+  }, []);
+
   fetchUsername(activeUserId, setActiveUsername);
 
   return (
@@ -24,16 +27,18 @@ const App = () => {
       value={{
         activeUser,
         activeUsername,
+        activeUserId,
         setShowLoginModal,
         setShowSignupModal,
         setActiveUser,
         setActiveUsername,
+        setActiveUserId,
       }}
     >
       <div className="container">
         <Navbar />
         <TodoInput />
-        <TodoItem />
+        <MappedTodoItems />
         {showLoginModal ? <LoginModal /> : null}
         {showSignupModal ? <SignupModal /> : null}
       </div>

@@ -1,21 +1,28 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { DataContext } from "../App";
 import { signOutUser } from "../utils/authServices";
+import { getAuth } from "firebase/auth";
 
 const Navbar = () => {
   const {
-    setShowLoginModal,
     activeUser,
-    setActiveUser,
     activeUsername,
+    setShowLoginModal,
+    setActiveUser,
     setActiveUsername,
+    setActiveUserId,
   } = useContext(DataContext);
+
+  const handleUserSignout = () => {
+    signOutUser();
+    setActiveUser("");
+    setActiveUsername("");
+    setActiveUserId("");
+  };
 
   const handleSetShowLoginModal = () => {
     if (activeUser) {
-      signOutUser();
-      setActiveUser("");
-      setActiveUsername("");
+      handleUserSignout();
     } else {
       setShowLoginModal(true);
     }
