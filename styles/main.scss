@@ -54,6 +54,32 @@ a {
   background-color: transparent;
 }
 
+input[type="checkbox"] {
+  appearance: none;
+  background-color: #fff;
+  margin: 0;
+  font: inherit;
+  color: currentColor;
+  width: 1.15em;
+  height: 1.15em;
+  border: $border;
+  border-radius: 0.15em;
+  transform: translateY(-0.075em);
+  display: grid;
+  place-content: center;
+}
+input[type="checkbox"]::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  transform: scale(0);
+  transition: 120ms transform ease-in-out;
+  box-shadow: inset 1em 1em $pink-theme;
+}
+input[type="checkbox"]:checked::before {
+  transform: scale(1);
+}
+
 .container {
   display: grid;
   place-items: center;
@@ -68,6 +94,17 @@ a {
   box-shadow: 0 0 2px $pink-theme, 0 0 6px $pink-theme, 0 0 10px $pink-theme,
     0 0 15px $pink-theme, 0 0 19px $pink-theme, 0 0 22px #ff8000,
     0 0 25px #ff8000;
+}
+
+.close {
+  top: 1px;
+  right: 5px;
+  font-size: 26px;
+  cursor: pointer;
+  background: none;
+  position: absolute;
+  color: $pink-theme;
+  font-weight: 600;
 }
 
 // * Navbar.jsx //
@@ -123,6 +160,14 @@ a {
     grid-template-columns: 8fr 1fr;
     gap: 1rem;
   }
+  fieldset {
+    border: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    height: 100%;
+  }
+
   button {
     grid-row-start: 1;
     grid-row-end: 3;
@@ -145,41 +190,9 @@ a {
     display: grid;
     align-self: center;
   }
-  input[type="checkbox"] {
-    appearance: none;
-    background-color: #fff;
-    margin: 0;
-    font: inherit;
-    color: currentColor;
-    width: 1.15em;
-    height: 1.15em;
-    border: $border;
-    border-radius: 0.15em;
-    transform: translateY(-0.075em);
-    display: grid;
-    place-content: center;
-  }
-  input[type="checkbox"]::before {
-    content: "";
-    width: 0.65em;
-    height: 0.65em;
-    transform: scale(0);
-    transition: 120ms transform ease-in-out;
-    box-shadow: inset 1em 1em $pink-theme;
-  }
-  input[type="checkbox"]:checked::before {
-    transform: scale(1);
-  }
   .warning::placeholder {
     font-size: $text-fontSize + 0.5rem;
     color: rgb(255, 43, 43);
-  }
-  fieldset {
-    border: none;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    height: 100%;
   }
 }
 
@@ -217,17 +230,6 @@ a {
     grid-template-rows: repeat(2, 1fr);
     border: none;
   }
-  .close {
-    top: 1px;
-    right: 5px;
-    border: none;
-    font-size: 26px;
-    cursor: pointer;
-    background: none;
-    position: absolute;
-    color: $pink-theme;
-    font-weight: 600;
-  }
   button {
     background-color: transparent;
     color: white;
@@ -236,6 +238,9 @@ a {
     border-radius: 5px;
     padding: 1rem;
     font-size: 1.3rem;
+  }
+  .close {
+    border: none;
   }
   .signup {
     text-align: center;
@@ -274,5 +279,83 @@ a {
   }
   .options {
     margin-left: 1rem;
+  }
+  .tags {
+    color: $lavendar-theme;
+    opacity: 70%;
+  }
+}
+
+// * TaskEditModal.jsx //
+
+.taskEditModal {
+  .show {
+    min-height: 30vh;
+    min-width: 55vw;
+    top: 50%;
+    left: 50%;
+    display: grid;
+    position: fixed;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(25px);
+    transform: translate(-50%, -50%);
+    background-color: rgba(40, 40, 40, 0.65);
+    box-shadow: rgba(242, 238, 238, 0.16) 0px 3px 6px,
+      rgba(255, 255, 255, 0.23) 0px 3px 6px;
+    border-radius: 5px;
+  }
+  fieldset {
+    border: none;
+    display: grid;
+  }
+  label {
+    padding: 1rem;
+  }
+  .options {
+    display: grid;
+    grid-template-columns: 5fr 1fr;
+  }
+  .input-task,
+  .input-tags {
+    width: 100%;
+    font-size: 1.5rem;
+  }
+  .urgent {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    place-items: center;
+    padding: 1rem;
+  }
+  .img-urgent {
+    height: 40px;
+  }
+  input[type="checkbox"] {
+    height: 38px;
+    width: 38px;
+  }
+  input[type="checkbox"]::before {
+    content: "";
+    width: 30px;
+    height: 30px;
+    transform: scale(0);
+    transition: 120ms transform ease-in-out;
+    box-shadow: inset 1em 1em $pink-theme;
+  }
+  input[type="checkbox"]:checked::before {
+    transform: scale(1);
+  }
+  .btn-submit {
+    background-color: transparent;
+    height: 3rem;
+    width: 7rem;
+    color: white;
+    border: 4px solid white;
+    border-radius: 5px;
+    font-size: 1.5rem;
+  }
+  form {
+    display: grid;
+    justify-items: center;
   }
 }

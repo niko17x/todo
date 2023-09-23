@@ -12,7 +12,8 @@ export const addTodoToFirestore = async (
   activeUsername,
   taskInput,
   urgentFlag,
-  userId
+  userId,
+  tags
 ) => {
   try {
     const docRef = await addDoc(collection(db, "todo"), {
@@ -20,7 +21,7 @@ export const addTodoToFirestore = async (
       userId: userId,
       createdAt: serverTimestamp(),
       urgentFlag: urgentFlag,
-      tags: "",
+      tags: tags,
       taskInput: taskInput,
     });
 

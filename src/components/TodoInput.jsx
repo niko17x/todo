@@ -1,12 +1,23 @@
-import React, { useContext, useState } from "react";
-import { addTodoToFirestore } from "../utils/addTodoToFirestore";
+import React, { useContext, useEffect, useState } from "react";
+import { addTodoToFirestore } from "../utils/addTaskToFirestore";
 import { DataContext } from "../App";
 
 export const TodoInput = () => {
-  const { activeUsername, activeUserId } = useContext(DataContext);
-  const [taskInput, setTaskInput] = useState("");
+  const {
+    activeUsername,
+    activeUserId,
+    setTaskInput,
+    taskInput,
+    isUrgent,
+    setIsUrgent,
+  } = useContext(DataContext);
   const [inputIsEmpty, setInputIsEmpty] = useState(null);
-  const [isUrgent, setIsUrgent] = useState(false);
+  const [tags, setTags] = useState("");
+
+  const addHashToTags = () => {
+    const splitTags = tags.split(" ");
+    return splitTags.map((tag) => "#" + tag + " ");
+  };
 
   const handleTaskInput = () => {
     if (!taskInput) {
@@ -15,8 +26,17 @@ export const TodoInput = () => {
       }, 1800);
       setInputIsEmpty(true);
     } else {
-      addTodoToFirestore(activeUsername, taskInput, isUrgent, activeUserId);
+      const hashedTags = addHashToTags();
+      addTodoToFirestore(
+        activeUsername,
+        taskInput,
+        isUrgent,
+        activeUserId,
+        hashedTags
+      );
       setTaskInput("");
+      setIsUrgent(false);
+      setTags("");
     }
   };
 
@@ -48,13 +68,11 @@ export const TodoInput = () => {
           <input
             className="tags-input"
             type="text"
-            placeholder="Tags: #birthday, #holiday, #travel"
+            placeholder="Add tags separated by a space."
+            onChange={(e) => setTags(e.target.value)}
           />
           <fieldset>
-            <img
-              className="exclamation"
-              src="../src/assets/icons/exclamation.svg"
-            />
+            <img src="../src/assets/icons/exclamation.svg" />
             <label className="form-control" htmlFor="checkbox">
               <input
                 type="checkbox"

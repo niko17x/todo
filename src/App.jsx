@@ -6,6 +6,7 @@ import { SignupModal } from "./components/SignupModal";
 import fetchActiveUser from "./utils/fetchActiveUser";
 import fetchUsername from "./utils/fetchUsername";
 import { MappedTodoItems } from "./components/MappedTodoItems";
+import { TaskEditModal } from "./components/TaskEditModal";
 
 export const DataContext = createContext();
 
@@ -13,8 +14,13 @@ const App = () => {
   const [activeUserId, setActiveUserId] = useState("");
   const [activeUser, setActiveUser] = useState("");
   const [activeUsername, setActiveUsername] = useState("");
+  const [taskInput, setTaskInput] = useState("");
+  const [todoTasks, setTodoTasks] = useState([]);
+  const [taskEditId, setTaskEditId] = useState(""); // ! Change this to a more dynamic version for the "task ID".
+  const [isUrgent, setIsUrgent] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
+  const [showTaskEditModal, setShowTaskEditModal] = useState(false);
 
   useEffect(() => {
     fetchActiveUser(setActiveUser, setActiveUserId);
@@ -28,11 +34,20 @@ const App = () => {
         activeUser,
         activeUsername,
         activeUserId,
+        taskInput,
+        todoTasks,
+        taskEditId,
+        isUrgent,
+        setIsUrgent,
+        setTaskEditId,
+        setTodoTasks,
         setShowLoginModal,
         setShowSignupModal,
         setActiveUser,
         setActiveUsername,
         setActiveUserId,
+        setTaskInput,
+        setShowTaskEditModal,
       }}
     >
       <div className="container">
@@ -41,6 +56,7 @@ const App = () => {
         <MappedTodoItems />
         {showLoginModal ? <LoginModal /> : null}
         {showSignupModal ? <SignupModal /> : null}
+        {showTaskEditModal ? <TaskEditModal /> : null}
       </div>
     </DataContext.Provider>
   );

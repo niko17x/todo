@@ -1,7 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { DataContext } from "../App";
 import { signOutUser } from "../utils/authServices";
-import { getAuth } from "firebase/auth";
 
 const Navbar = () => {
   const {
