@@ -9,7 +9,7 @@ const fetchUsername = async (activeUserId, setActiveUsername) => {
   try {
     const docRef = doc(db, `users/${activeUserId}`);
     const docSnap = await getDoc(docRef);
-    const getUsername = docSnap.exists() ? docSnap.data() : undefined;
+    const getUsername = docSnap.exists() ? docSnap.data() : null;
     setActiveUsername(getUsername.username);
   } catch (error) {
     console.log(`Error: ${error} - Occurred @ fetchUsername hook.`);

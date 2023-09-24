@@ -17,9 +17,6 @@ export const MappedTodoItems = () => {
     fetchTodoCollection(setTodoTasks, activeUserId);
   }, [setTodoTasks, activeUserId]);
 
-  // create useEffect to go through FS tags and add hash before every element:
-  useEffect(() => {});
-
   const deleteTask = async (task) => {
     await deleteDoc(doc(db, `todo/${task}`));
   };

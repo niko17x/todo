@@ -17,6 +17,7 @@ const Navbar = () => {
     setActiveUser("");
     setActiveUsername("");
     setActiveUserId("");
+    setActiveUsername("guest");
   };
 
   const handleSetShowLoginModal = () => {
@@ -37,7 +38,10 @@ const Navbar = () => {
             <div>Log Out</div>
           </div>
         ) : (
-          "Log In"
+          <div>
+            Welcome, Guest
+            <div>Log In</div>
+          </div>
         )}
       </button>
     </nav>

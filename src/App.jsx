@@ -13,7 +13,7 @@ export const DataContext = createContext();
 const App = () => {
   const [activeUserId, setActiveUserId] = useState("");
   const [activeUser, setActiveUser] = useState("");
-  const [activeUsername, setActiveUsername] = useState("");
+  const [activeUsername, setActiveUsername] = useState("guest");
   const [taskInput, setTaskInput] = useState("");
   const [todoTasks, setTodoTasks] = useState([]);
   const [taskEditId, setTaskEditId] = useState(""); // ! Change this to a more dynamic version for the "task ID".

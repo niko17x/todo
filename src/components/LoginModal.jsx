@@ -3,6 +3,7 @@ import { DataContext } from "../App";
 import { signInUser } from "../utils/authServices";
 import { hideAllModal, toggleModalView } from "../utils/helpers";
 import UseFetchUsername from "../utils/fetchUsername";
+import { deleteGuestTasks } from "../utils/deleteGuestTasks";
 
 export const LoginModal = () => {
   const {
@@ -17,6 +18,7 @@ export const LoginModal = () => {
   const handleSigninUser = async (e) => {
     const userObj = await signInUser(email, password);
     if (userObj) {
+      deleteGuestTasks();
       UseFetchUsername(userObj.uid, setActiveUsername);
       setActiveUser(userObj.uid);
       e.target.reset();
