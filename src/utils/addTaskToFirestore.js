@@ -2,34 +2,32 @@ import {
   addDoc,
   collection,
   serverTimestamp,
-  updateDoc,
+  doc,
+  setDoc,
 } from "firebase/firestore";
 import { db } from "../lib/firebase";
 
-// TODO: Try to learn FB batch and implement it here instead of using updateDoc().
-
-export const addTodoToFirestore = async (
+export const addTodoToFirestore = async ({
   activeUsername,
   taskInput,
   urgentFlag,
   activeUserId,
-  tags
-) => {
+  tags,
+}) => {
   try {
-    const docRef = await addDoc(collection(db, "todo"), {
+    const todoCollection = collection(db, "todo");
+    const newDocRef = doc(todoCollection); // This gets a new document reference with an auto-generated ID
+
+    await setDoc(newDocRef, {
+      taskId: newDocRef.id, // Use the auto-generated ID here
       username: activeUsername,
       userId: activeUserId,
       createdAt: serverTimestamp(),
       urgentFlag: urgentFlag,
       tags: tags,
       taskInput: taskInput,
+      updatedAt: "",
     });
-
-    if (docRef.id) {
-      await updateDoc(docRef, {
-        taskId: docRef.id,
-      });
-    }
   } catch (error) {
     console.log(`Error ${error} - occurred @ addTodoToFirestore function.`);
   }

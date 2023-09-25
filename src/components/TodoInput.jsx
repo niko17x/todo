@@ -1,6 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { addTodoToFirestore } from "../utils/addTaskToFirestore";
 import { DataContext } from "../App";
+import { addHashToTags, resetInputs } from "../utils/helpers";
 
 export const TodoInput = () => {
   const {
@@ -10,14 +11,10 @@ export const TodoInput = () => {
     taskInput,
     isUrgent,
     setIsUrgent,
+    tags,
+    setTags,
   } = useContext(DataContext);
   const [inputIsEmpty, setInputIsEmpty] = useState(null);
-  const [tags, setTags] = useState("");
-
-  const addHashToTags = () => {
-    const splitTags = tags.split(" ");
-    return splitTags.map((tag) => "#" + tag + " ");
-  };
 
   const handleTaskInput = () => {
     if (!taskInput) {
@@ -26,17 +23,15 @@ export const TodoInput = () => {
       }, 1800);
       setInputIsEmpty(true);
     } else {
-      const hashedTags = addHashToTags();
-      addTodoToFirestore(
-        activeUsername,
-        taskInput,
-        isUrgent,
-        activeUserId,
-        hashedTags
-      );
-      setTaskInput("");
-      setIsUrgent(false);
-      setTags("");
+      const hashedTags = addHashToTags(tags);
+      addTodoToFirestore({
+        activeUsername: activeUsername,
+        taskInput: taskInput,
+        urgentFlag: isUrgent,
+        activeUserId: activeUserId,
+        tags: hashedTags,
+      });
+      resetInputs(setTaskInput, setIsUrgent, setTags);
     }
   };
 

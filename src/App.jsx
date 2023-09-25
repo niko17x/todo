@@ -15,6 +15,7 @@ const App = () => {
   const [activeUser, setActiveUser] = useState("");
   const [activeUsername, setActiveUsername] = useState("guest");
   const [taskInput, setTaskInput] = useState("");
+  const [tags, setTags] = useState("");
   const [todoTasks, setTodoTasks] = useState([]);
   const [taskEditId, setTaskEditId] = useState(""); // ! Change this to a more dynamic version for the "task ID".
   const [isUrgent, setIsUrgent] = useState(false);
@@ -38,6 +39,8 @@ const App = () => {
         todoTasks,
         taskEditId,
         isUrgent,
+        tags,
+        setTags,
         setIsUrgent,
         setTaskEditId,
         setTodoTasks,

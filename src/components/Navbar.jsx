@@ -33,12 +33,12 @@ const Navbar = () => {
       <p>Todo App</p>
       <button type="button" onClick={() => handleSetShowLoginModal(true)}>
         {activeUser ? (
-          <div>
+          <div className="greeting">
             Welcome, {activeUsername}
             <div>Log Out</div>
           </div>
         ) : (
-          <div>
+          <div className="greeting">
             Welcome, Guest
             <div>Log In</div>
           </div>

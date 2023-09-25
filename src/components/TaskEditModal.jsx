@@ -1,6 +1,9 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { DataContext } from "../App";
 import { editTaskOnFirestore } from "../utils/editTaskAtFirestore";
+import { doc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { db } from "../lib/firebase";
+import { addHashToTags, resetInputs } from "../utils/helpers";
 
 export const TaskEditModal = () => {
   const {
@@ -11,15 +14,40 @@ export const TaskEditModal = () => {
     isUrgent,
     setIsUrgent,
     taskInput,
+    tags,
+    setTags,
   } = useContext(DataContext);
+  const [editsMade, setEditsMade] = useState(null);
 
   const handleUrgentInput = (e) => {
     setIsUrgent(e.target.checked);
   };
 
-  const handleTaskEditInput = () => {
-    editTaskOnFirestore(taskInput, isUrgent, taskEditId);
-    setShowTaskEditModal(false);
+  const updateTags = async (taskId) => {
+    const hashedTags = addHashToTags(tags);
+    const docRef = doc(db, `todo/${taskId}`);
+    await updateDoc(docRef, {
+      tags: hashedTags,
+      updatedAt: serverTimestamp(),
+    });
+  };
+
+  const handleTaskEditInput = (taskId) => {
+    if (!taskInput && !tags) {
+      setTimeout(() => {
+        setEditsMade(false);
+      }, 2000);
+      setEditsMade(true);
+      return;
+    }
+    try {
+      editTaskOnFirestore(taskInput, isUrgent, taskEditId);
+      setShowTaskEditModal(false);
+      updateTags(taskId);
+    } catch (error) {
+      console.log(`Error ${error} - occurred @ handleTaskEditInput function.`);
+    }
+    resetInputs(setTaskInput, setIsUrgent, setTags);
   };
 
   return (
@@ -40,7 +68,7 @@ export const TaskEditModal = () => {
                 action=""
                 onSubmit={(e) => {
                   e.preventDefault();
-                  handleTaskEditInput();
+                  handleTaskEditInput(task.taskId);
                 }}
               >
                 <fieldset>
@@ -48,7 +76,7 @@ export const TaskEditModal = () => {
                     <input
                       className="input-task"
                       type="text"
-                      name="input"
+                      name="task"
                       placeholder={task.taskInput}
                       onChange={(e) => setTaskInput(e.target.value)}
                     ></input>
@@ -60,6 +88,7 @@ export const TaskEditModal = () => {
                         type="text"
                         name="tags"
                         placeholder={task.tags.length ? task.tags : "Tags #"}
+                        onChange={(e) => setTags(e.target.value)}
                       ></input>
                     </label>
                     <div className="urgent">
@@ -83,6 +112,9 @@ export const TaskEditModal = () => {
                 <button className="btn-submit" type="submit">
                   Submit
                 </button>
+                {!editsMade ? null : (
+                  <div style={{ color: "red" }}>No edits made.</div>
+                )}
               </form>
             </div>
           );
