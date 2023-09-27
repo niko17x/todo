@@ -3,7 +3,7 @@
 <!-- ! Note: Focus on pure functions - single responsibility! -->
 
 - [] If no changes are made while editing task, no changes should be made.
-  \*\*\* Continue with edit input modal. Submit should only be clickable if there are actually any edits made. Tags should also be spaced and hashed properly.
+
 - [] User can complete task by clicking on the task itself.
 - [] Freeze background when any modal is present.
 - [] Filtering tasks.

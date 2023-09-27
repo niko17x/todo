@@ -1,7 +1,11 @@
 import React, { useContext, useState } from "react";
 import { addTodoToFirestore } from "../utils/addTaskToFirestore";
 import { DataContext } from "../App";
-import { addHashToTags, resetInputs } from "../utils/helpers";
+import {
+  addHashToTags,
+  displayWarningMessage,
+  resetInputs,
+} from "../utils/helpers";
 
 export const TodoInput = () => {
   const {
@@ -17,12 +21,8 @@ export const TodoInput = () => {
   const [inputIsEmpty, setInputIsEmpty] = useState(null);
 
   const handleTaskInput = () => {
-    if (!taskInput) {
-      setTimeout(() => {
-        setInputIsEmpty(false);
-      }, 1800);
-      setInputIsEmpty(true);
-    } else {
+    !taskInput ? displayWarningMessage(setInputIsEmpty) : null;
+    try {
       const hashedTags = addHashToTags(tags);
       addTodoToFirestore({
         activeUsername: activeUsername,
@@ -31,8 +31,10 @@ export const TodoInput = () => {
         activeUserId: activeUserId,
         tags: hashedTags,
       });
-      resetInputs(setTaskInput, setIsUrgent, setTags);
+    } catch (error) {
+      console.log(`Error ${error} - occurred @ handleTaskInput function.`);
     }
+    resetInputs(setTaskInput, setIsUrgent, setTags);
   };
 
   const handleUrgentInput = (e) => {

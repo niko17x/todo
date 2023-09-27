@@ -18,3 +18,11 @@ export const resetInputs = (setTaskInput, setIsUrgent, setTags) => {
   setIsUrgent(false);
   setTags("");
 };
+
+export const displayWarningMessage = (setter) => {
+  setTimeout(() => {
+    setter(false);
+  }, 2000);
+  setter(true);
+  return;
+};

@@ -1,9 +1,13 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { DataContext } from "../App";
 import { editTaskOnFirestore } from "../utils/editTaskAtFirestore";
-import { doc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
-import { addHashToTags, resetInputs } from "../utils/helpers";
+import {
+  addHashToTags,
+  displayWarningMessage,
+  resetInputs,
+} from "../utils/helpers";
 
 export const TaskEditModal = () => {
   const {
@@ -23,31 +27,38 @@ export const TaskEditModal = () => {
     setIsUrgent(e.target.checked);
   };
 
-  const updateTags = async (taskId) => {
-    const hashedTags = addHashToTags(tags);
-    const docRef = doc(db, `todo/${taskId}`);
-    await updateDoc(docRef, {
-      tags: hashedTags,
-      updatedAt: serverTimestamp(),
-    });
+  const updatedFirestore = async (taskId, data) => {
+    try {
+      const docRef = doc(db, `todo/${taskId}`);
+      await updateDoc(docRef, {
+        updatedAt: serverTimestamp(),
+        ...data,
+      });
+    } catch (error) {
+      console.log(`Error ${error} - Occurred @ updatedFirestore function.`);
+    }
   };
 
-  const handleTaskEditInput = (taskId) => {
-    if (!taskInput && !tags) {
-      setTimeout(() => {
-        setEditsMade(false);
-      }, 2000);
-      setEditsMade(true);
+  const handleTaskEditInput = (taskId, e) => {
+    e.preventDefault();
+    if (!taskInput & !tags) {
+      displayWarningMessage(setEditsMade);
       return;
     }
     try {
-      editTaskOnFirestore(taskInput, isUrgent, taskEditId);
+      if (taskInput && tags) {
+        editTaskOnFirestore(taskInput, isUrgent, taskId, tags);
+      } else if (taskInput) {
+        updatedFirestore(taskId, { taskInput });
+      } else if (tags) {
+        updatedFirestore(taskId, { tags: addHashToTags(tags) });
+      }
+      e.target.reset();
       setShowTaskEditModal(false);
-      updateTags(taskId);
+      resetInputs(setTaskInput, setIsUrgent, setTags);
     } catch (error) {
-      console.log(`Error ${error} - occurred @ handleTaskEditInput function.`);
+      console.log(`Error: ${error} - Occurred @ handleTaskEditInput function.`);
     }
-    resetInputs(setTaskInput, setIsUrgent, setTags);
   };
 
   return (
@@ -59,7 +70,10 @@ export const TaskEditModal = () => {
               <button
                 className="close"
                 type="button"
-                onClick={() => setShowTaskEditModal(false)}
+                onClick={() => {
+                  setShowTaskEditModal(false);
+                  resetInputs(setTaskInput, setIsUrgent, setTags);
+                }}
               >
                 X
               </button>
@@ -68,7 +82,7 @@ export const TaskEditModal = () => {
                 action=""
                 onSubmit={(e) => {
                   e.preventDefault();
-                  handleTaskEditInput(task.taskId);
+                  handleTaskEditInput(task.taskId, e);
                 }}
               >
                 <fieldset>
