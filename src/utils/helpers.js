@@ -10,7 +10,12 @@ export const hideAllModal = (setShowLoginModal, setShowSignupModal) => {
 
 export const addHashToTags = (tags) => {
   const splitTags = tags.split(" ");
-  return splitTags.map((tag) => "#" + tag + " ");
+  const filteredTags = splitTags.filter((tag) => tag !== "");
+  return filteredTags
+    .map((tag) => {
+      return tag.includes("#") ? tag : "#" + tag;
+    })
+    .join(" ");
 };
 
 export const resetInputs = (setTaskInput, setIsUrgent, setTags) => {

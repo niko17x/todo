@@ -8,25 +8,19 @@ import {
 } from "../utils/helpers";
 
 export const TodoInput = () => {
-  const {
-    activeUsername,
-    activeUserId,
-    setTaskInput,
-    taskInput,
-    isUrgent,
-    setIsUrgent,
-    tags,
-    setTags,
-  } = useContext(DataContext);
+  const { activeUsername, activeUserId, isUrgent, setIsUrgent } =
+    useContext(DataContext);
   const [inputIsEmpty, setInputIsEmpty] = useState(null);
+  const [localTaskInput, setLocalTaskInput] = useState("");
+  const [localTagInput, setLocalTagInput] = useState("");
 
   const handleTaskInput = () => {
-    !taskInput ? displayWarningMessage(setInputIsEmpty) : null;
+    !localTaskInput ? displayWarningMessage(setInputIsEmpty) : null;
     try {
-      const hashedTags = addHashToTags(tags);
+      const hashedTags = addHashToTags(localTagInput);
       addTodoToFirestore({
         activeUsername: activeUsername,
-        taskInput: taskInput,
+        taskInput: localTaskInput,
         urgentFlag: isUrgent,
         activeUserId: activeUserId,
         tags: hashedTags,
@@ -34,7 +28,7 @@ export const TodoInput = () => {
     } catch (error) {
       console.log(`Error ${error} - occurred @ handleTaskInput function.`);
     }
-    resetInputs(setTaskInput, setIsUrgent, setTags);
+    resetInputs(setLocalTaskInput, setIsUrgent, setLocalTagInput);
   };
 
   const handleUrgentInput = (e) => {
@@ -59,14 +53,14 @@ export const TodoInput = () => {
               ? "This field can not be empty."
               : "What do you need to do?"
           }
-          onChange={(e) => setTaskInput(e.target.value)}
+          onChange={(e) => setLocalTaskInput(e.target.value)}
         />
         <div className="options">
           <input
             className="tags-input"
             type="text"
             placeholder="Add tags separated by a space."
-            onChange={(e) => setTags(e.target.value)}
+            onChange={(e) => setLocalTagInput(e.target.value)}
           />
           <fieldset>
             <img src="../src/assets/icons/exclamation.svg" />

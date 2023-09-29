@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { DataContext } from "../App";
 import { editTaskOnFirestore } from "../utils/editTaskAtFirestore";
-import { doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { doc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import {
   addHashToTags,
@@ -10,18 +10,17 @@ import {
 } from "../utils/helpers";
 
 export const TaskEditModal = () => {
-  const {
-    taskEditId,
-    todoTasks,
-    setShowTaskEditModal,
-    setTaskInput,
-    isUrgent,
-    setIsUrgent,
-    taskInput,
-    tags,
-    setTags,
-  } = useContext(DataContext);
+  const { taskEditId, todoTasks, setShowTaskEditModal, isUrgent, setIsUrgent } =
+    useContext(DataContext);
   const [editsMade, setEditsMade] = useState(null);
+  const [localTaskInput, setLocalTaskInput] = useState("");
+  const [localTags, setLocalTags] = useState("");
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const [hasInteractedWithTags, setHasInteractedWithTags] = useState(false);
+
+  useEffect(() => {
+    addHashToTags(localTags);
+  }, [localTags]);
 
   const handleUrgentInput = (e) => {
     setIsUrgent(e.target.checked);
@@ -41,24 +40,41 @@ export const TaskEditModal = () => {
 
   const handleTaskEditInput = (taskId, e) => {
     e.preventDefault();
-    if (!taskInput & !tags) {
+    if (!localTaskInput && !localTags) {
       displayWarningMessage(setEditsMade);
       return;
     }
     try {
-      if (taskInput && tags) {
-        editTaskOnFirestore(taskInput, isUrgent, taskId, tags);
-      } else if (taskInput) {
-        updatedFirestore(taskId, { taskInput });
-      } else if (tags) {
-        updatedFirestore(taskId, { tags: addHashToTags(tags) });
+      const data = {};
+      if (localTaskInput) {
+        data.taskInput = localTaskInput;
       }
-      e.target.reset();
+      if (localTags) {
+        data.tags = addHashToTags(localTags);
+      }
+      if (isUrgent) {
+        data.urgentFlag = isUrgent;
+      }
+      if (localTaskInput && localTags) {
+        editTaskOnFirestore(localTaskInput, isUrgent, taskId, localTags);
+      } else {
+        updatedFirestore(taskId, data);
+      }
       setShowTaskEditModal(false);
-      resetInputs(setTaskInput, setIsUrgent, setTags);
+      resetInputs(setLocalTaskInput, setIsUrgent, setLocalTags);
     } catch (error) {
       console.log(`Error: ${error} - Occurred @ handleTaskEditInput function.`);
     }
+  };
+
+  const handleTaskInputChange = (e) => {
+    setLocalTaskInput(e.target.value);
+    setHasInteracted(true);
+  };
+
+  const handleTagsInputChange = (e) => {
+    setLocalTags(e.target.value);
+    setHasInteractedWithTags(true);
   };
 
   return (
@@ -72,7 +88,7 @@ export const TaskEditModal = () => {
                 type="button"
                 onClick={() => {
                   setShowTaskEditModal(false);
-                  resetInputs(setTaskInput, setIsUrgent, setTags);
+                  resetInputs(setLocalTaskInput, setIsUrgent, setLocalTags);
                 }}
               >
                 X
@@ -91,8 +107,8 @@ export const TaskEditModal = () => {
                       className="input-task"
                       type="text"
                       name="task"
-                      placeholder={task.taskInput}
-                      onChange={(e) => setTaskInput(e.target.value)}
+                      value={hasInteracted ? localTaskInput : task.taskInput}
+                      onChange={handleTaskInputChange}
                     ></input>
                   </label>
                   <div className="options">
@@ -101,8 +117,8 @@ export const TaskEditModal = () => {
                         className="input-tags"
                         type="text"
                         name="tags"
-                        placeholder={task.tags.length ? task.tags : "Tags #"}
-                        onChange={(e) => setTags(e.target.value)}
+                        value={hasInteractedWithTags ? localTags : task.tags}
+                        onChange={handleTagsInputChange}
                       ></input>
                     </label>
                     <div className="urgent">
