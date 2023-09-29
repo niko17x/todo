@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { DataContext } from "../App";
 import { editTaskOnFirestore } from "../utils/editTaskAtFirestore";
 import { doc, serverTimestamp, updateDoc } from "firebase/firestore";
@@ -10,21 +10,15 @@ import {
 } from "../utils/helpers";
 
 export const TaskEditModal = () => {
-  const { taskEditId, todoTasks, setShowTaskEditModal, isUrgent, setIsUrgent } =
+  const { taskEditId, todoTasks, setShowTaskEditModal } =
     useContext(DataContext);
   const [editsMade, setEditsMade] = useState(null);
   const [localTaskInput, setLocalTaskInput] = useState("");
   const [localTags, setLocalTags] = useState("");
+  const [localUrgentInput, setLocalUrgentInput] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [hasInteractedWithTags, setHasInteractedWithTags] = useState(false);
-
-  useEffect(() => {
-    addHashToTags(localTags);
-  }, [localTags]);
-
-  const handleUrgentInput = (e) => {
-    setIsUrgent(e.target.checked);
-  };
+  const [hasInteractedWithUrgent, setHasInteractedWithUrgent] = useState(false);
 
   const updatedFirestore = async (taskId, data) => {
     try {
@@ -40,10 +34,7 @@ export const TaskEditModal = () => {
 
   const handleTaskEditInput = (taskId, e) => {
     e.preventDefault();
-    if (!localTaskInput && !localTags) {
-      displayWarningMessage(setEditsMade);
-      return;
-    }
+
     try {
       const data = {};
       if (localTaskInput) {
@@ -52,16 +43,18 @@ export const TaskEditModal = () => {
       if (localTags) {
         data.tags = addHashToTags(localTags);
       }
-      if (isUrgent) {
-        data.urgentFlag = isUrgent;
-      }
       if (localTaskInput && localTags) {
-        editTaskOnFirestore(localTaskInput, isUrgent, taskId, localTags);
+        editTaskOnFirestore(
+          localTaskInput,
+          localUrgentInput,
+          taskId,
+          localTags
+        );
       } else {
-        updatedFirestore(taskId, data);
+        updatedFirestore(taskId, { ...data, urgentFlag: localUrgentInput });
       }
       setShowTaskEditModal(false);
-      resetInputs(setLocalTaskInput, setIsUrgent, setLocalTags);
+      resetInputs(setLocalTaskInput, setLocalUrgentInput, setLocalTags);
     } catch (error) {
       console.log(`Error: ${error} - Occurred @ handleTaskEditInput function.`);
     }
@@ -77,6 +70,11 @@ export const TaskEditModal = () => {
     setHasInteractedWithTags(true);
   };
 
+  const handleUrgentInput = (e) => {
+    setLocalUrgentInput(e.target.checked);
+    setHasInteractedWithUrgent((prev) => !prev);
+  };
+
   return (
     <div className="taskEditModal">
       {todoTasks.map((task) => {
@@ -88,7 +86,11 @@ export const TaskEditModal = () => {
                 type="button"
                 onClick={() => {
                   setShowTaskEditModal(false);
-                  resetInputs(setLocalTaskInput, setIsUrgent, setLocalTags);
+                  resetInputs(
+                    setLocalTaskInput,
+                    setLocalUrgentInput,
+                    setLocalTags
+                  );
                 }}
               >
                 X
@@ -132,7 +134,12 @@ export const TaskEditModal = () => {
                           className="input-checkbox"
                           type="checkbox"
                           name="checkbox"
-                          checked={isUrgent}
+                          // checked={task.urgentFlag}
+                          checked={
+                            hasInteractedWithUrgent
+                              ? localUrgentInput
+                              : task.urgentFlag
+                          }
                           onChange={handleUrgentInput}
                         />
                       </label>

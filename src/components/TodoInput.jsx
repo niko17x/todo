@@ -15,7 +15,10 @@ export const TodoInput = () => {
   const [localTagInput, setLocalTagInput] = useState("");
 
   const handleTaskInput = () => {
-    !localTaskInput ? displayWarningMessage(setInputIsEmpty) : null;
+    if (!localTaskInput) {
+      displayWarningMessage(setInputIsEmpty);
+      return;
+    }
     try {
       const hashedTags = addHashToTags(localTagInput);
       addTodoToFirestore({

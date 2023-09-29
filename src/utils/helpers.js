@@ -10,7 +10,7 @@ export const hideAllModal = (setShowLoginModal, setShowSignupModal) => {
 
 export const addHashToTags = (tags) => {
   const splitTags = tags.split(" ");
-  const filteredTags = splitTags.filter((tag) => tag !== "");
+  const filteredTags = splitTags.filter((tag) => tag !== "" && tag.length > 1);
   return filteredTags
     .map((tag) => {
       return tag.includes("#") ? tag : "#" + tag;
