@@ -1,10 +1,4 @@
-import {
-  addDoc,
-  collection,
-  serverTimestamp,
-  doc,
-  setDoc,
-} from "firebase/firestore";
+import { collection, serverTimestamp, doc, setDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
 
 export const addTodoToFirestore = async ({
@@ -27,6 +21,7 @@ export const addTodoToFirestore = async ({
       tags: tags,
       taskInput: taskInput,
       updatedAt: "",
+      completed: false,
     });
   } catch (error) {
     console.log(`Error ${error} - occurred @ addTodoToFirestore function.`);

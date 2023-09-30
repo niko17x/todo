@@ -107,6 +107,11 @@ input[type="checkbox"]:checked::before {
   font-weight: 600;
 }
 
+.completed {
+  text-decoration: line-through;
+  opacity: 30%;
+}
+
 // * Navbar.jsx //
 
 .navbar {
@@ -265,6 +270,7 @@ input[type="checkbox"]:checked::before {
   border-radius: 5px;
   background-color: $green-theme;
   width: 40rem;
+  cursor: pointer;
   p {
     font-size: $text-fontSize;
   }

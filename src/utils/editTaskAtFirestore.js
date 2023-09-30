@@ -14,6 +14,7 @@ export const editTaskOnFirestore = async (
       urgentFlag: urgentFlag,
       tags: [tags],
       taskInput: taskInput,
+      completed: false,
     });
   } catch (error) {
     console.log(`Error ${error} - occured @ editTaskAtFirestore.js.`);

@@ -1,60 +1,44 @@
 import React, { useContext, useState } from "react";
 import { DataContext } from "../App";
+import { updateFirestoreTodoFields } from "../utils/updateFirestoreTodoFields";
 import { editTaskOnFirestore } from "../utils/editTaskAtFirestore";
-import { doc, serverTimestamp, updateDoc } from "firebase/firestore";
-import { db } from "../lib/firebase";
-import {
-  addHashToTags,
-  displayWarningMessage,
-  resetInputs,
-} from "../utils/helpers";
+import { addHashToTags, resetInputs } from "../utils/helpers";
 
 export const TaskEditModal = () => {
   const { taskEditId, todoTasks, setShowTaskEditModal } =
     useContext(DataContext);
-  const [editsMade, setEditsMade] = useState(null);
   const [localTaskInput, setLocalTaskInput] = useState("");
-  const [localTags, setLocalTags] = useState("");
+  const [localTagsInput, setLocalTagsInput] = useState("");
   const [localUrgentInput, setLocalUrgentInput] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [hasInteractedWithTags, setHasInteractedWithTags] = useState(false);
   const [hasInteractedWithUrgent, setHasInteractedWithUrgent] = useState(false);
 
-  const updatedFirestore = async (taskId, data) => {
-    try {
-      const docRef = doc(db, `todo/${taskId}`);
-      await updateDoc(docRef, {
-        updatedAt: serverTimestamp(),
-        ...data,
-      });
-    } catch (error) {
-      console.log(`Error ${error} - Occurred @ updatedFirestore function.`);
-    }
-  };
-
   const handleTaskEditInput = (taskId, e) => {
     e.preventDefault();
-
     try {
       const data = {};
       if (localTaskInput) {
         data.taskInput = localTaskInput;
       }
-      if (localTags) {
-        data.tags = addHashToTags(localTags);
+      if (localTagsInput) {
+        data.tags = addHashToTags(localTagsInput);
       }
-      if (localTaskInput && localTags) {
+      if (localTaskInput && localTagsInput) {
         editTaskOnFirestore(
           localTaskInput,
           localUrgentInput,
           taskId,
-          localTags
+          localTagsInput
         );
       } else {
-        updatedFirestore(taskId, { ...data, urgentFlag: localUrgentInput });
+        updateFirestoreTodoFields(taskId, {
+          ...data,
+          urgentFlag: localUrgentInput,
+        });
       }
       setShowTaskEditModal(false);
-      resetInputs(setLocalTaskInput, setLocalUrgentInput, setLocalTags);
+      resetInputs(setLocalTaskInput, setLocalUrgentInput, setLocalTagsInput);
     } catch (error) {
       console.log(`Error: ${error} - Occurred @ handleTaskEditInput function.`);
     }
@@ -66,11 +50,11 @@ export const TaskEditModal = () => {
   };
 
   const handleTagsInputChange = (e) => {
-    setLocalTags(e.target.value);
+    setLocalTagsInput(e.target.value);
     setHasInteractedWithTags(true);
   };
 
-  const handleUrgentInput = (e) => {
+  const handleUrgentInputChange = (e) => {
     setLocalUrgentInput(e.target.checked);
     setHasInteractedWithUrgent((prev) => !prev);
   };
@@ -89,7 +73,7 @@ export const TaskEditModal = () => {
                   resetInputs(
                     setLocalTaskInput,
                     setLocalUrgentInput,
-                    setLocalTags
+                    setLocalTagsInput
                   );
                 }}
               >
@@ -119,7 +103,9 @@ export const TaskEditModal = () => {
                         className="input-tags"
                         type="text"
                         name="tags"
-                        value={hasInteractedWithTags ? localTags : task.tags}
+                        value={
+                          hasInteractedWithTags ? localTagsInput : task.tags
+                        }
                         onChange={handleTagsInputChange}
                       ></input>
                     </label>
@@ -140,7 +126,7 @@ export const TaskEditModal = () => {
                               ? localUrgentInput
                               : task.urgentFlag
                           }
-                          onChange={handleUrgentInput}
+                          onChange={handleUrgentInputChange}
                         />
                       </label>
                     </div>
@@ -149,9 +135,6 @@ export const TaskEditModal = () => {
                 <button className="btn-submit" type="submit">
                   Submit
                 </button>
-                {!editsMade ? null : (
-                  <div style={{ color: "red" }}>No edits made.</div>
-                )}
               </form>
             </div>
           );
