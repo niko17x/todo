@@ -5,7 +5,7 @@ import { editTaskOnFirestore } from "../utils/editTaskAtFirestore";
 import { addHashToTags, resetInputs } from "../utils/helpers";
 
 export const TaskEditModal = () => {
-  const { taskEditId, todoTasks, setShowTaskEditModal } =
+  const { taskEditId, todoTasks, setShowTaskEditModal, showTaskEditModal } =
     useContext(DataContext);
   const [localTaskInput, setLocalTaskInput] = useState("");
   const [localTagsInput, setLocalTagsInput] = useState("");
@@ -60,86 +60,88 @@ export const TaskEditModal = () => {
   };
 
   return (
-    <div className="taskEditModal">
-      {todoTasks.map((task) => {
-        if (task.taskId === taskEditId) {
-          return (
-            <div className="show" key={task.taskId}>
-              <button
-                className="close"
-                type="button"
-                onClick={() => {
-                  setShowTaskEditModal(false);
-                  resetInputs(
-                    setLocalTaskInput,
-                    setLocalUrgentInput,
-                    setLocalTagsInput
-                  );
-                }}
-              >
-                X
-              </button>
-              <form
-                id="modal"
-                action=""
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleTaskEditInput(task.taskId, e);
-                }}
-              >
-                <fieldset>
-                  <label htmlFor="input">
-                    <input
-                      className="input-task"
-                      type="text"
-                      name="task"
-                      value={hasInteracted ? localTaskInput : task.taskInput}
-                      onChange={handleTaskInputChange}
-                    ></input>
-                  </label>
-                  <div className="options">
-                    <label htmlFor="tags">
+    <div className={showTaskEditModal ? "overlay" : ""}>
+      <div className="taskEditModal modal">
+        {todoTasks.map((task) => {
+          if (task.taskId === taskEditId) {
+            return (
+              <div className="show" key={task.taskId}>
+                <button
+                  className="close"
+                  type="button"
+                  onClick={() => {
+                    setShowTaskEditModal(false);
+                    resetInputs(
+                      setLocalTaskInput,
+                      setLocalUrgentInput,
+                      setLocalTagsInput
+                    );
+                  }}
+                >
+                  X
+                </button>
+                <form
+                  id="modal"
+                  action=""
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleTaskEditInput(task.taskId, e);
+                  }}
+                >
+                  <fieldset>
+                    <label htmlFor="input">
                       <input
-                        className="input-tags"
+                        className="input-task"
                         type="text"
-                        name="tags"
-                        value={
-                          hasInteractedWithTags ? localTagsInput : task.tags
-                        }
-                        onChange={handleTagsInputChange}
+                        name="task"
+                        value={hasInteracted ? localTaskInput : task.taskInput}
+                        onChange={handleTaskInputChange}
                       ></input>
                     </label>
-                    <div className="urgent">
-                      <img
-                        className="img-urgent"
-                        src="../src/assets/icons/exclamation.svg"
-                        alt="hourglass"
-                      />
-                      <label htmlFor="checkbox">
+                    <div className="options">
+                      <label htmlFor="tags">
                         <input
-                          className="input-checkbox"
-                          type="checkbox"
-                          name="checkbox"
-                          // checked={task.urgentFlag}
-                          checked={
-                            hasInteractedWithUrgent
-                              ? localUrgentInput
-                              : task.urgentFlag
+                          className="input-tags"
+                          type="text"
+                          name="tags"
+                          value={
+                            hasInteractedWithTags ? localTagsInput : task.tags
                           }
-                          onChange={handleUrgentInputChange}
-                        />
+                          onChange={handleTagsInputChange}
+                        ></input>
                       </label>
+                      <div className="urgent">
+                        <img
+                          className="img-urgent"
+                          src="../src/assets/icons/exclamation.svg"
+                          alt="hourglass"
+                        />
+                        <label htmlFor="checkbox">
+                          <input
+                            className="input-checkbox"
+                            type="checkbox"
+                            name="checkbox"
+                            // checked={task.urgentFlag}
+                            checked={
+                              hasInteractedWithUrgent
+                                ? localUrgentInput
+                                : task.urgentFlag
+                            }
+                            onChange={handleUrgentInputChange}
+                          />
+                        </label>
+                      </div>
                     </div>
-                  </div>
-                </fieldset>
-                <button className="btn-submit" type="submit">
-                  Submit
-                </button>
-              </form>
-            </div>
-          );
-        }
-      })}
+                  </fieldset>
+                  <button className="btn-submit" type="submit">
+                    Submit
+                  </button>
+                </form>
+              </div>
+            );
+          }
+        })}
+      </div>
     </div>
   );
 };

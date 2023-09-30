@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { fetchTodoCollection } from "../utils/fetchTodoCollection";
 import { db } from "../lib/firebase";
 import { deleteDoc, doc, getDoc } from "firebase/firestore";
@@ -57,9 +57,11 @@ export const MappedTodoItems = () => {
             task.urgentFlag ? "mappedTodoItem urgent-glow" : "mappedTodoItem"
           } ${task.completed ? "completed" : ""}`}
           key={task.createdAt}
-          onClick={() => handleTaskCompletion(task)}
         >
-          <p>{task.taskInput}</p>
+          <div onClick={() => handleTaskCompletion(task)}>
+            <p>{task.taskInput}</p>
+            <div className="tags">{task.tags}</div>
+          </div>
           <div className="options">
             <button
               type="button"
@@ -77,7 +79,6 @@ export const MappedTodoItems = () => {
               />
             </button>
           </div>
-          <div className="tags">{task.tags}</div>
         </div>
       ))}
     </>

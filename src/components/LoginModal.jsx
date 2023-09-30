@@ -7,6 +7,7 @@ import { deleteGuestTasks } from "../utils/deleteGuestTasks";
 
 export const LoginModal = () => {
   const {
+    showLoginModal,
     setShowLoginModal,
     setShowSignupModal,
     setActiveUsername,
@@ -29,54 +30,56 @@ export const LoginModal = () => {
   };
 
   return (
-    <div className="loginModal show">
-      <div className="show">
-        <button
-          className="close"
-          type="button"
-          onClick={() => setShowLoginModal(false)}
-        >
-          X
-        </button>
-        <form
-          id="sign_in--form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSigninUser(e);
-          }}
-        >
-          <fieldset>
-            <label htmlFor="email">
-              <input
-                type="email"
-                name="email"
-                placeholder="EMAIL"
-                onChange={(e) => setEmail(e.target.value)}
-              ></input>
-            </label>
-            <label>
-              <input
-                type="password"
-                name="password"
-                placeholder="PASSWORD"
-                onChange={(e) => setPassword(e.target.value)}
-              ></input>
-            </label>
-          </fieldset>
-          <button type="submit">Log In</button>
-          <div className="signup">
-            New here?
-            <span
-              className="modal-link"
-              onClick={() =>
-                toggleModalView(setShowLoginModal, setShowSignupModal)
-              }
-            >
-              {" "}
-              Sign Up
-            </span>
-          </div>
-        </form>
+    <div className={showLoginModal ? "overlay" : ""}>
+      <div className="loginModal show modal">
+        <div className="show">
+          <button
+            className="close"
+            type="button"
+            onClick={() => setShowLoginModal(false)}
+          >
+            X
+          </button>
+          <form
+            id="sign_in--form"
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSigninUser(e);
+            }}
+          >
+            <fieldset>
+              <label htmlFor="email">
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="EMAIL"
+                  onChange={(e) => setEmail(e.target.value)}
+                ></input>
+              </label>
+              <label>
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="PASSWORD"
+                  onChange={(e) => setPassword(e.target.value)}
+                ></input>
+              </label>
+            </fieldset>
+            <button type="submit">Log In</button>
+            <div className="signup">
+              New here?
+              <span
+                className="modal-link"
+                onClick={() =>
+                  toggleModalView(setShowLoginModal, setShowSignupModal)
+                }
+              >
+                {" "}
+                Sign Up
+              </span>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

@@ -6,6 +6,7 @@ import UseFetchUsername from "../utils/fetchUsername";
 
 export const SignupModal = () => {
   const {
+    showSignupModal,
     setShowLoginModal,
     setShowSignupModal,
     activeUsername,
@@ -30,62 +31,64 @@ export const SignupModal = () => {
   };
 
   return (
-    <div className="signupModal show">
-      <div className="show">
-        <button
-          className="close"
-          type="button"
-          onClick={() => setShowSignupModal(false)}
-        >
-          X
-        </button>
-        <form
-          id="sign_in--form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSignUpUser(e);
-          }}
-        >
-          <fieldset>
-            <label htmlFor="username">
-              <input
-                type="text"
-                name="username"
-                placeholder="USERNAME"
-                onChange={(e) => setActiveUsername(e.target.value)}
-              ></input>
-            </label>
-            <label htmlFor="email">
-              <input
-                type="email"
-                name="email"
-                placeholder="EMAIL"
-                onChange={(e) => setSignupEmail(e.target.value)}
-              ></input>
-            </label>
-            <label>
-              <input
-                type="password"
-                name="password"
-                placeholder="PASSWORD"
-                onChange={(e) => setSignupPassword(e.target.value)}
-              ></input>
-            </label>
-          </fieldset>
-          <button type="submit">Sign Up</button>
-          <div className="signup">
-            Already registered?
-            <span
-              className="modal-link"
-              onClick={() =>
-                toggleModalView(setShowLoginModal, setShowSignupModal)
-              }
-            >
-              {" "}
-              Log In
-            </span>
-          </div>
-        </form>
+    <div className={showSignupModal ? "overlay" : ""}>
+      <div className="signupModal show modal">
+        <div className="show">
+          <button
+            className="close"
+            type="button"
+            onClick={() => setShowSignupModal(false)}
+          >
+            X
+          </button>
+          <form
+            id="sign_in--form"
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSignUpUser(e);
+            }}
+          >
+            <fieldset>
+              <label htmlFor="username">
+                <input
+                  type="text"
+                  name="username"
+                  placeholder="USERNAME"
+                  onChange={(e) => setActiveUsername(e.target.value)}
+                ></input>
+              </label>
+              <label htmlFor="email">
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="EMAIL"
+                  onChange={(e) => setSignupEmail(e.target.value)}
+                ></input>
+              </label>
+              <label>
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="PASSWORD"
+                  onChange={(e) => setSignupPassword(e.target.value)}
+                ></input>
+              </label>
+            </fieldset>
+            <button type="submit">Sign Up</button>
+            <div className="signup">
+              Already registered?
+              <span
+                className="modal-link"
+                onClick={() =>
+                  toggleModalView(setShowLoginModal, setShowSignupModal)
+                }
+              >
+                {" "}
+                Log In
+              </span>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import fetchActiveUser from "./utils/fetchActiveUser";
 import fetchUsername from "./utils/fetchUsername";
 import { MappedTodoItems } from "./components/MappedTodoItems";
 import { TaskEditModal } from "./components/TaskEditModal";
+import { Sidebar } from "./components/Sidebar";
 
 export const DataContext = createContext();
 
@@ -36,6 +37,9 @@ const App = () => {
         todoTasks,
         taskEditId,
         isUrgent,
+        showTaskEditModal,
+        showLoginModal,
+        showSignupModal,
         setIsUrgent,
         setTaskEditId,
         setTodoTasks,
@@ -48,12 +52,18 @@ const App = () => {
       }}
     >
       <div className="container">
-        <Navbar />
-        <TodoInput />
-        <MappedTodoItems />
         {showLoginModal ? <LoginModal /> : null}
         {showSignupModal ? <SignupModal /> : null}
         {showTaskEditModal ? <TaskEditModal /> : null}
+        <Navbar />
+
+        <div className="main">
+          <div className="taskComponents">
+            <TodoInput />
+            <MappedTodoItems />
+          </div>
+          <Sidebar />
+        </div>
       </div>
     </DataContext.Provider>
   );

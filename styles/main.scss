@@ -68,6 +68,7 @@ input[type="checkbox"] {
   display: grid;
   place-content: center;
 }
+
 input[type="checkbox"]::before {
   content: "";
   width: 0.65em;
@@ -76,13 +77,24 @@ input[type="checkbox"]::before {
   transition: 120ms transform ease-in-out;
   box-shadow: inset 1em 1em $pink-theme;
 }
+
 input[type="checkbox"]:checked::before {
   transform: scale(1);
 }
 
+li {
+  list-style-type: none;
+}
+
 .container {
-  display: grid;
-  place-items: center;
+  .main {
+    display: grid;
+    grid-template-columns: 2fr 5fr;
+
+    .taskComponents {
+      grid-column-start: 2;
+    }
+  }
 }
 
 .modal-link {
@@ -112,6 +124,16 @@ input[type="checkbox"]:checked::before {
   opacity: 30%;
 }
 
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  backdrop-filter: blur(8px);
+  background-color: rgba(40, 40, 40, 0.2);
+}
+
 // * Navbar.jsx //
 
 .navbar {
@@ -125,9 +147,6 @@ input[type="checkbox"]:checked::before {
     font-weight: 800;
     font-size: 3rem;
     color: $violet-theme;
-  }
-  li {
-    list-style-type: none;
   }
   button {
     width: fit-content;
@@ -208,24 +227,23 @@ input[type="checkbox"]:checked::before {
 
 .loginModal,
 .signupModal {
-  border: $border;
   margin: 3rem;
   color: white;
   .show {
     min-height: 40vh;
     min-width: 35vw;
-    top: 50%;
+    top: 25%;
     left: 50%;
     display: grid;
     position: fixed;
     align-items: center;
     justify-content: center;
     backdrop-filter: blur(25px);
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -25%);
     background-color: rgba(40, 40, 40, 0.65);
     box-shadow: rgba(242, 238, 238, 0.16) 0px 3px 6px,
       rgba(255, 255, 255, 0.23) 0px 3px 6px;
-    border-radius: 5px;
+    border-radius: 10px;
   }
   form {
     display: grid;
@@ -269,7 +287,7 @@ input[type="checkbox"]:checked::before {
   border: $border;
   border-radius: 5px;
   background-color: $green-theme;
-  width: 40rem;
+  width: 48rem;
   cursor: pointer;
   p {
     font-size: $text-fontSize;
@@ -298,18 +316,18 @@ input[type="checkbox"]:checked::before {
   .show {
     min-height: 30vh;
     min-width: 55vw;
-    top: 50%;
+    top: 25%;
     left: 50%;
     display: grid;
     position: fixed;
     align-items: center;
     justify-content: center;
     backdrop-filter: blur(25px);
-    transform: translate(-50%, -50%);
-    background-color: rgba(40, 40, 40, 0.65);
+    transform: translate(-50%, -25%);
+    background-color: rgba(40, 40, 40, 0.7);
     box-shadow: rgba(242, 238, 238, 0.16) 0px 3px 6px,
       rgba(255, 255, 255, 0.23) 0px 3px 6px;
-    border-radius: 5px;
+    border-radius: 10px;
   }
   fieldset {
     border: none;
@@ -363,5 +381,62 @@ input[type="checkbox"]:checked::before {
   form {
     display: grid;
     justify-items: center;
+  }
+}
+
+// * Sidebar.jsx //
+
+.sidebar {
+  color: white;
+  position: fixed;
+  left: 0;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 1rem;
+  display: grid;
+  grid-template-columns: 1fr min-content;
+  .divider {
+    border-top: 5px solid $pink-theme;
+  }
+  .defaultCategories {
+    display: grid;
+    gap: 1rem;
+    margin: 0;
+    padding: 2rem;
+    li {
+      border: 5px solid $violet-theme;
+      border-radius: 10px;
+      padding: 2rem;
+      background-color: $green-theme;
+      text-align: left;
+      font-weight: 600;
+      font-size: 1.7rem;
+    }
+  }
+  .userGeneratedCategories {
+    display: grid;
+    gap: 1rem;
+    font-weight: 600;
+    font-size: 1.4rem;
+    div {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: 1fr 1fr;
+    }
+    .task-quantity {
+      display: grid;
+      place-self: center;
+      font-size: 1rem;
+      opacity: 40%;
+    }
+  }
+  img {
+    height: 2.5rem;
+    position: fixed;
+    left: 300px;
+    margin-top: 2rem;
+  }
+  .my-list {
+    padding-top: 2rem;
   }
 }
