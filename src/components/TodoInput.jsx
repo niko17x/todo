@@ -8,7 +8,7 @@ import {
 } from "../utils/helpers";
 
 export const TodoInput = () => {
-  const { activeUsername, activeUserId, isUrgent, setIsUrgent } =
+  const { activeUsername, activeUserId, isUrgent, setIsUrgent, selectedList } =
     useContext(DataContext);
   const [inputIsEmpty, setInputIsEmpty] = useState(null);
   const [localTaskInput, setLocalTaskInput] = useState("");
@@ -27,6 +27,7 @@ export const TodoInput = () => {
         urgentFlag: isUrgent,
         activeUserId: activeUserId,
         tags: hashedTags,
+        selectedList,
       });
     } catch (error) {
       console.log(`Error ${error} - occurred @ handleTaskInput function.`);

@@ -8,6 +8,7 @@ import fetchUsername from "./utils/fetchUsername";
 import { MappedTodoItems } from "./components/MappedTodoItems";
 import { TaskEditModal } from "./components/TaskEditModal";
 import { Sidebar } from "./components/Sidebar";
+import { loadListToFirestore } from "./utils/loadListToFirestore";
 
 export const DataContext = createContext();
 
@@ -21,12 +22,26 @@ const App = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showTaskEditModal, setShowTaskEditModal] = useState(false);
+  const [selectedList, setSelectedList] = useState("today");
+  const [defaultList, setDefaultList] = useState([
+    "today",
+    "all",
+    "urgent",
+    "completed",
+  ]);
 
   useEffect(() => {
     fetchActiveUser(setActiveUser, setActiveUserId);
   }, []);
 
-  fetchUsername(activeUserId, setActiveUsername);
+  useEffect(() => {
+    fetchUsername(activeUserId, setActiveUsername);
+  }, [activeUserId]);
+
+  // Load default list (in Sidebar) to FS:
+  useEffect(() => {
+    loadListToFirestore(activeUserId, defaultList);
+  }, [activeUserId, defaultList]);
 
   return (
     <DataContext.Provider
@@ -40,6 +55,9 @@ const App = () => {
         showTaskEditModal,
         showLoginModal,
         showSignupModal,
+        defaultList,
+        selectedList,
+        setSelectedList,
         setIsUrgent,
         setTaskEditId,
         setTodoTasks,

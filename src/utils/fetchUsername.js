@@ -5,7 +5,6 @@ const fetchUsername = async (activeUserId, setActiveUsername) => {
   if (!activeUserId) {
     return;
   }
-
   try {
     const docRef = doc(db, `users/${activeUserId}`);
     const docSnap = await getDoc(docRef);

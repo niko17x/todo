@@ -12,18 +12,19 @@ export const MappedTodoItems = () => {
     setTodoTasks,
     setTaskEditId,
     setShowTaskEditModal,
+    selectedList,
   } = useContext(DataContext);
 
   useEffect(() => {
-    fetchTodoCollection(setTodoTasks, activeUserId);
-  }, [setTodoTasks, activeUserId]);
+    fetchTodoCollection(setTodoTasks, activeUserId, selectedList);
+  }, [setTodoTasks, activeUserId, selectedList]);
 
   const deleteTask = async (task) => {
-    await deleteDoc(doc(db, `todo/${task}`));
+    await deleteDoc(doc(db, `todo/${activeUserId}/today/${task}`));
   };
 
   const updateTaskEditIdState = async (taskId) => {
-    const docRef = doc(db, "todo", taskId);
+    const docRef = doc(db, `todo/${activeUserId}/today/${taskId}`);
     const docSnapshot = await getDoc(docRef);
     setTaskEditId(docSnapshot.data().taskId);
   };
@@ -35,7 +36,7 @@ export const MappedTodoItems = () => {
 
   const handleTaskCompletion = (task) => {
     // Immediately updated UI for experience:
-    updateFirestoreTodoFields(task.taskId, {
+    updateFirestoreTodoFields(activeUserId, selectedList, task.taskId, {
       completed: !task.completed,
     });
     // Update the local state too for React re-rendering:
@@ -51,36 +52,38 @@ export const MappedTodoItems = () => {
 
   return (
     <>
-      {todoTasks.map((task) => (
-        <div
-          className={`${
-            task.urgentFlag ? "mappedTodoItem urgent-glow" : "mappedTodoItem"
-          } ${task.completed ? "completed" : ""}`}
-          key={task.createdAt}
-        >
-          <div onClick={() => handleTaskCompletion(task)}>
-            <p>{task.taskInput}</p>
-            <div className="tags">{task.tags}</div>
+      {todoTasks
+        .filter((task) => task.showDoc)
+        .map((task) => (
+          <div
+            className={`${
+              task.urgentFlag ? "mappedTodoItem urgent-glow" : "mappedTodoItem"
+            } ${task.completed ? "completed" : ""}`}
+            key={task.createdAt}
+          >
+            <div onClick={() => handleTaskCompletion(task)}>
+              <p>{task.taskInput}</p>
+              <div className="tags">{task.tags}</div>
+            </div>
+            <div className="options">
+              <button
+                type="button"
+                onClick={() => {
+                  handleTaskEditClick(task.taskId);
+                }}
+              >
+                <img src="../../src/assets/icons/edit.svg" alt="Edit" />
+              </button>
+              <button>
+                <img
+                  src="../../src/assets/icons/trash.svg"
+                  alt="Delete"
+                  onClick={() => deleteTask(task.taskId)}
+                />
+              </button>
+            </div>
           </div>
-          <div className="options">
-            <button
-              type="button"
-              onClick={() => {
-                handleTaskEditClick(task.taskId);
-              }}
-            >
-              <img src="../../src/assets/icons/edit.svg" alt="Edit" />
-            </button>
-            <button>
-              <img
-                src="../../src/assets/icons/trash.svg"
-                alt="Delete"
-                onClick={() => deleteTask(task.taskId)}
-              />
-            </button>
-          </div>
-        </div>
-      ))}
+        ))}
     </>
   );
 };
