@@ -18,6 +18,7 @@ export const loadListToFirestore = async (activeUserId, defaultList) => {
         await addDoc(newSubCollRef, {
           createdAt: serverTimestamp(),
           showDoc: false,
+          hasDefaultList: false,
         });
       }
     }

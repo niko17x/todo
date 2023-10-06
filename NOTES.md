@@ -2,7 +2,8 @@
 
 <!-- ! Note: Focus on pure functions - single responsibility! -->
 
-- [] Allow user to store tasks in different categories (work, personal, finance, ect...).
+- [] Adding custom lists.
+- [] Deal with how tasks will be stored and displayed for default lists.
 
 - [] Filtering tasks.
 - [] Add a calendar for user to select todo task date.
@@ -15,5 +16,18 @@
 - [check] Fix urgentFlag when editing task on modal.
 - [check] Completed tasks are crossed off and lower opacity.
 - [check] Freeze background when any modal is present.
+- [check] Allow user to store tasks in different categories (work, personal, finance, ect...).
 
 ### Thoughts:
+Here is my firestore data:
+- collection: todo
+  - document: userId
+    - sub collections:
+      - all
+      - completed
+      - today
+      - urgent
+      - groceries
+      - coding
+      
+I need to be able to retrieve "groceries" and "coding" from this sub collection and put that data into a react state array. Is this possible?

@@ -1,6 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import { DataContext } from "../App";
-import { addNewListToFirestore } from "../utils/addNewListToFirestore";
+import { addNewListToFirestore } from "../utils/addListToFirestore";
+import { updateCustomListInFirestore } from "../utils/updateCustomListInFirestore";
+import { updateCustomListState } from "../utils/updateCustomListState";
+import {
+  deleteListFromField,
+  deleteListFromFirestore,
+} from "../utils/deleteListFromFirestore";
 
 export const Sidebar = () => {
   const { defaultList, activeUserId, setSelectedList, selectedList } =
@@ -8,13 +14,23 @@ export const Sidebar = () => {
   const [customList, setCustomList] = useState([]);
   const [newListName, setNewListName] = useState("");
 
+  useEffect(() => {
+    updateCustomListState(activeUserId, setCustomList);
+  }, [activeUserId, customList]);
+
   const handleAddingNewList = (e) => {
     e.preventDefault();
     if (newListName.trim()) {
       addNewListToFirestore(activeUserId, newListName);
-      setCustomList((prev) => [...prev, newListName]);
+      updateCustomListInFirestore(activeUserId, newListName);
       setNewListName("");
     }
+  };
+
+  // Delete list from customList state and from Firestore sub collection.
+  const handleListDeletion = (list) => {
+    deleteListFromFirestore(activeUserId, list);
+    deleteListFromField(activeUserId, list);
   };
 
   const mapDefaultList = () => {
@@ -39,11 +55,21 @@ export const Sidebar = () => {
     return (
       <form onSubmit={handleAddingNewList}>
         <ul className="userGeneratedCategories">
-          {customList.map((category, index) => {
+          {customList.map((list, index) => {
             return (
-              <div key={index}>
-                <li>{category}</li>
+              <div
+                key={index}
+                className={
+                  selectedList === list ? "selected custom-list" : "custom-list"
+                }
+                onClick={() => setSelectedList(list)}
+              >
+                <li>{list}</li>
                 <div className="task-quantity">7</div>
+                <img
+                  src="../../src/assets/icons/trash.svg"
+                  onClick={() => handleListDeletion(list)}
+                />
               </div>
             );
           })}
@@ -52,6 +78,7 @@ export const Sidebar = () => {
             type="text"
             placeholder="Add New List"
             value={newListName}
+            maxLength={17}
             onChange={(e) => setNewListName(e.target.value)}
           />
           <button type="submit">+</button>
