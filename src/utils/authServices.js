@@ -18,6 +18,7 @@ export const signUpUser = async (email, password, username) => {
     await setDoc(userDocRef, {
       email: user.email,
       username,
+      hasDefaultList: false,
     });
     console.log("User successfully registered!");
     return { user };

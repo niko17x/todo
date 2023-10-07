@@ -1,12 +1,23 @@
-### Tasks:
-
 <!-- ! Note: Focus on pure functions - single responsibility! -->
 
-- [] Adding custom lists.
-- [] Deal with how tasks will be stored and displayed for default lists.
+### Working on...
 
-- [] Filtering tasks.
+- [] Optimize read/write firestore operations.
+  - Focus especially on read operations.
+
+### Tasks:
+
+- [] Handle default list (all, urgent, completed) with proper data.
+  - Add appropriate tasks to list at time of creation or time of field status change (ie: urgentFlag: true => false).
+  - Implement batched writes for atomicity (less "roundtrips" to FS).
 - [] Add a calendar for user to select todo task date.
+- [] Add option to hide Sidebar.jsx.
+- [] Option to delete all completed tasks.
+  - Implement a "main" button that allows user to delete completed tasks (on any given list).
+- [] Redesign custom list input element.
+
+### Completed Tasks:
+
 - [check] Show todo tasks only for the respective signed in user.
 - [check] Edit button functionality in todo task items.
 - [check] Guest user can create tasks.
@@ -17,17 +28,12 @@
 - [check] Completed tasks are crossed off and lower opacity.
 - [check] Freeze background when any modal is present.
 - [check] Allow user to store tasks in different categories (work, personal, finance, ect...).
+- [check] Adding custom lists.
+- [check] Deal with how tasks will be stored and displayed for default lists.
 
 ### Thoughts:
-Here is my firestore data:
-- collection: todo
-  - document: userId
-    - sub collections:
-      - all
-      - completed
-      - today
-      - urgent
-      - groceries
-      - coding
-      
-I need to be able to retrieve "groceries" and "coding" from this sub collection and put that data into a react state array. Is this possible?
+
+### Edits Made:
+
+1. App.jsx - Added a conditional statement in useEffect to only run if condition is met. Added a new doc field called "hasDefaultList" in each user collection in FS. The purpose of this addition is to load the default state "default list" based on the boolean value of hasDefaultList to conserve read operations in FS.
+2. Sidebar.jsx - Removed the "customList" dependency in useEffect. The useEffect is invoking "setCustomList" which in turn, the dependency is being updated with "customList" causing a constant re-trigger causing additional read/write operations.

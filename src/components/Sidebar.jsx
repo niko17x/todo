@@ -15,22 +15,39 @@ export const Sidebar = () => {
   const [newListName, setNewListName] = useState("");
 
   useEffect(() => {
-    updateCustomListState(activeUserId, setCustomList);
-  }, [activeUserId, customList]);
+    const fetchAndUpdateCustomList = async () => {
+      const updatedCustomList = await updateCustomListState(activeUserId);
+      setCustomList(updatedCustomList);
+    };
+    fetchAndUpdateCustomList();
+  }, [activeUserId]);
 
   const handleAddingNewList = (e) => {
     e.preventDefault();
     if (newListName.trim()) {
-      addNewListToFirestore(activeUserId, newListName);
-      updateCustomListInFirestore(activeUserId, newListName);
-      setNewListName("");
+      setCustomList((prev) => [...prev, newListName]);
+      try {
+        updateCustomListInFirestore(activeUserId, newListName);
+        addNewListToFirestore(activeUserId, newListName);
+        setNewListName("");
+      } catch (error) {
+        console.log(`Error: ${error} - handleAddingNewList`);
+      }
     }
   };
 
   // Delete list from customList state and from Firestore sub collection.
-  const handleListDeletion = (list) => {
-    deleteListFromFirestore(activeUserId, list);
-    deleteListFromField(activeUserId, list);
+  const handleListDeletion = async (list) => {
+    try {
+      await deleteListFromFirestore(activeUserId, list);
+      await deleteListFromField(activeUserId, list);
+      setCustomList((prev) => prev.filter((data) => data !== list));
+      setSelectedList("today");
+    } catch (error) {
+      console.log(`Error: ${error} - handleListDeletion`);
+      // If something fails, revert customList to previous.
+      setCustomList((prev) => [...prev, list]);
+    }
   };
 
   const mapDefaultList = () => {

@@ -9,6 +9,8 @@ import { MappedTodoItems } from "./components/MappedTodoItems";
 import { TaskEditModal } from "./components/TaskEditModal";
 import { Sidebar } from "./components/Sidebar";
 import { loadListToFirestore } from "./utils/loadListToFirestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { db } from "./lib/firebase";
 
 export const DataContext = createContext();
 
@@ -17,7 +19,7 @@ const App = () => {
   const [activeUser, setActiveUser] = useState("");
   const [activeUsername, setActiveUsername] = useState("guest");
   const [todoTasks, setTodoTasks] = useState([]);
-  const [taskEditId, setTaskEditId] = useState(""); // ! Change this to a more dynamic version for the "task ID".
+  const [taskEditId, setTaskEditId] = useState("");
   const [isUrgent, setIsUrgent] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
@@ -30,6 +32,8 @@ const App = () => {
     "completed",
   ]);
 
+  console.log(selectedList);
+
   useEffect(() => {
     fetchActiveUser(setActiveUser, setActiveUserId);
   }, []);
@@ -38,9 +42,22 @@ const App = () => {
     fetchUsername(activeUserId, setActiveUsername);
   }, [activeUserId]);
 
-  // Load default list (in Sidebar) to FS:
   useEffect(() => {
-    loadListToFirestore(activeUserId, defaultList);
+    // loadListToFirestore(activeUserId, defaultList);
+    // !! Only load default list if user doc field "hasDefaultList" is set to false. This is to prevent any additional FS read operations:
+    const loadIfNecessary = async () => {
+      const docRef = await getDoc(doc(db, `users/${activeUserId}`));
+      if (!docRef.data().hasDefaultList) {
+        await loadListToFirestore(activeUserId, defaultList);
+        await updateDoc(doc(db, `users/${activeUserId}`), {
+          hasDefaultList: true,
+        });
+      }
+    };
+    if (activeUserId) {
+      loadIfNecessary();
+    }
+    // !!
   }, [activeUserId, defaultList]);
 
   return (
