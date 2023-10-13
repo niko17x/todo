@@ -42,6 +42,12 @@
   - `await addCompletedTaskToFirestore(activeUserId, task)` => deletes the task from Completed and adds the same task to Today while updating task.complete field from false to true.
 
 - ## Problem 2: Clicking on a task and making it "complete" renders all task items in completed collection. Why?
-  - This problem was the result of React state setter setSelectedList, FS onSnapshot listener and potentially an issue regarding data retrieval.
-  - Recreating the bug => User clicks on a list like Today => useEffect is invoked with `fetchTodoCollection()` due to its dependency _selectedList_ => User adds a task in Today => onSnapshot attaches to Today to retrieve live data => user (quickly) clicks on another list like Completed => useEffect is invoked again with `fetchTodoCollection()` also being invoked since _selectedList_ being a dependency has changed again => User goes back to Today list => User completes task in Today list => onSnaphot ends up retrieving data from Completed instead of Today list even if selectedList is currently set to Today.
-  - This bug is in part caused by the asynchronous nature of fetching data combined with _onSnapshot_.
+  - ### Issue:
+    - This problem was the result of React state setter setSelectedList, FS onSnapshot listener and potentially an issue regarding data retrieval.
+    - Recreating the bug => User clicks on a list like Today => useEffect is invoked with `fetchTodoCollection()` due to its dependency _selectedList_ => User adds a task in Today => onSnapshot attaches to Today to retrieve live data => user (quickly) clicks on another list like Completed => useEffect is invoked again with `fetchTodoCollection()` also being invoked since _selectedList_ being a dependency has changed again => User goes back to Today list => User completes task in Today list => onSnaphot ends up retrieving data from Completed instead of Today list even if selectedList is currently set to Today.
+    - This bug is in part caused by the asynchronous nature of fetching data combined with _onSnapshot_.
+  - ### Resolve:
+    - In order to prevent onSnapshot from retrieving data it shouldn't, we need to stop the previous _listener_ before setting up a new listener. Bascially, have only one listener at a time since the issue was b/c there was a listener created for every list being clicked causing multiple listeners.
+    - The idea is to use React useRef to ensure that when one listener is active, another isn't created until the previous listener has ended. Also, using a useRef prevent a re-render.
+    ### Chat GPT:
+    - The provided solution addresses the possible issue of overlapping Firestore listeners by ensuring that, before setting up a new listener, any previous listener is unsubscribed. This helps prevent scenarios where older listeners might overwrite the state with stale data after a new listener has already updated it. It's important to note that the effectiveness of this solution assumes that the `fetchTodoCollection` function sets up an `onSnapshot` listener and returns its corresponding unsubscribe function. If it doesn't, adjustments to the function would be necessary.

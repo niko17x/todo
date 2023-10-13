@@ -73,10 +73,9 @@ export const MappedTodoItems = () => {
       updateTodoTasksState(task);
       await toggleTaskCompleteField(activeUserId, selectedList, task);
 
-      // if (taskToggledStatus) {
-      //   moveTaskToCompleted(activeUserId, task);
-      // }
-      if (!taskToggledStatus) {
+      if (taskToggledStatus) {
+        moveTaskToCompleted(activeUserId, task);
+      } else {
         await moveTaskToToday(activeUserId, task);
       }
     } catch (error) {
