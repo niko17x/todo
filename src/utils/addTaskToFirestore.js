@@ -9,15 +9,17 @@ export const addTodoToFirestore = async ({
   activeUserId,
   tags,
   selectedList,
+  id,
 }) => {
   try {
     const todoCollection = collection(
       db,
       `todo/${activeUserId}/${selectedList}`
     );
-    const newDocRef = doc(todoCollection); // This gets a new document reference with an auto-generated ID
+    // Auto-generate a new ID if no data passed through ID parameter:
+    const newDocRef = id ? doc(todoCollection, id) : doc(todoCollection);
+
     await setDoc(newDocRef, {
-      taskId: newDocRef.id, // Use the auto-generated ID here
       username: activeUsername,
       userId: activeUserId,
       createdAt: serverTimestamp(),
@@ -28,6 +30,8 @@ export const addTodoToFirestore = async ({
       completed: false,
       showDoc: true,
     });
+    const generatedTaskId = newDocRef.id;
+    return { generatedTaskId };
   } catch (error) {
     console.log(`Error ${error} - occurred @ addTodoToFirestore function.`);
   }

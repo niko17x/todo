@@ -40,6 +40,7 @@ export const MappedTodoItems = () => {
       await deleteDoc(
         doc(db, `todo/${activeUserId}/${selectedList}/${task.id}`)
       );
+      await deleteDoc(doc(db, `todo/${activeUserId}/urgent/${task.id}`));
     } catch (error) {
       console.log(`Error: ${error} - Occurred @ deleteTask`);
     }

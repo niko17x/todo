@@ -2,9 +2,11 @@
 
 ### Working on...
 
-- [] Handle default list (all, urgent, completed) with proper data.
-  - Add appropriate tasks to list at time of creation or time of field status change (ie: urgentFlag: true => false).
-  - Implement batched writes for atomicity (less "roundtrips" to FS).
+// Reminder: When working on this, be sure to keep it dynamic for all lists including custom lists:
+
+- [] Handling Urgent list:
+  - [] When deleting urgent task from Today, also delete same task from Urgent.
+  - [] Completing a task in Urgent should delete the same task from Urgent as well.
 
 ### Tasks:
 

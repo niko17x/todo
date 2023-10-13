@@ -21,14 +21,21 @@ export const TodoInput = () => {
     }
     try {
       const hashedTags = addHashToTags(localTagInput);
-      await addTodoToFirestore({
-        activeUsername: activeUsername,
+      const todoData = {
+        activeUsername,
         taskInput: localTaskInput,
         urgentFlag: isUrgent,
-        activeUserId: activeUserId,
+        activeUserId,
         tags: hashedTags,
         selectedList,
-      });
+      };
+      const { generatedTaskId } = await addTodoToFirestore(todoData);
+      isUrgent &&
+        addTodoToFirestore({
+          ...todoData,
+          selectedList: "urgent",
+          id: generatedTaskId,
+        });
     } catch (error) {
       console.log(`Error ${error} - occurred @ handleTaskInput function.`);
     }
