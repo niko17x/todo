@@ -36,7 +36,6 @@ export const Sidebar = () => {
     }
   };
 
-  // Delete list from customList state and from Firestore sub collection.
   const handleListDeletion = async (list) => {
     try {
       await deleteListFromFirestore(activeUserId, list);

@@ -18,10 +18,14 @@ export const addHashToTags = (tags) => {
     .join(" ");
 };
 
-export const resetInputs = (setTaskInput, setIsUrgent, setTags) => {
-  setTaskInput("");
+export const resetInputs = (
+  setLocalTaskInput,
+  setIsUrgent,
+  setLocalTagInput
+) => {
+  setLocalTaskInput("");
   setIsUrgent(false);
-  setTags("");
+  setLocalTagInput("");
 };
 
 export const displayWarningMessage = (setter) => {

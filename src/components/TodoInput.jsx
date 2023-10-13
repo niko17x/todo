@@ -14,14 +14,14 @@ export const TodoInput = () => {
   const [localTaskInput, setLocalTaskInput] = useState("");
   const [localTagInput, setLocalTagInput] = useState("");
 
-  const handleTaskInput = () => {
+  const handleTaskInput = async () => {
     if (!localTaskInput) {
       displayWarningMessage(setInputIsEmpty);
       return;
     }
     try {
       const hashedTags = addHashToTags(localTagInput);
-      addTodoToFirestore({
+      await addTodoToFirestore({
         activeUsername: activeUsername,
         taskInput: localTaskInput,
         urgentFlag: isUrgent,

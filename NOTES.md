@@ -2,21 +2,20 @@
 
 ### Working on...
 
-- [] Optimize read/write firestore operations.
-  - Focus especially on read operations.
-
-### Tasks:
-
 - [] Handle default list (all, urgent, completed) with proper data.
   - Add appropriate tasks to list at time of creation or time of field status change (ie: urgentFlag: true => false).
   - Implement batched writes for atomicity (less "roundtrips" to FS).
+
+### Tasks:
+
+- [] Fix task rendering issue.
 - [] Add a calendar for user to select todo task date.
 - [] Add option to hide Sidebar.jsx.
 - [] Option to delete all completed tasks.
   - Implement a "main" button that allows user to delete completed tasks (on any given list).
 - [] Redesign custom list input element.
 
-### Completed Tasks:
+### Completed Tasks (filtered: latest completion @ end):
 
 - [check] Show todo tasks only for the respective signed in user.
 - [check] Edit button functionality in todo task items.
@@ -30,10 +29,19 @@
 - [check] Allow user to store tasks in different categories (work, personal, finance, ect...).
 - [check] Adding custom lists.
 - [check] Deal with how tasks will be stored and displayed for default lists.
+- [check] Optimize read/write firestore operations.
 
-### Thoughts:
+- ## Problem #1: Clicking on an incomplete task in the Today list causes that same task to be duplicated in the Completed list.
 
-### Edits Made:
+  - If user clicks on a task, the task becomes either complete or incomplete by invoking `updateTodoTasksState()` function.
+  - `updateTodoTasksState()` toggles the task.complete field to either true or false. The first click on any task will toggle task.complete to true by default.
+  - If the task is toggled to true, `await moveTaskToCompleted(activeUserId, task)` function is invoked.
+  - `await moveTaskToCompleted(activeUserId, task)` => deletes the task from Today and adds the same task (task ID) to the Completed list.
+    - Bug => Potential duplication may be happening here since this function is the only one that adds a document to the Completed list.
+  - If the task is toggled to false, `await addCompletedTaskToFirestore(activeUserId, task)` is invoked.
+  - `await addCompletedTaskToFirestore(activeUserId, task)` => deletes the task from Completed and adds the same task to Today while updating task.complete field from false to true.
 
-1. App.jsx - Added a conditional statement in useEffect to only run if condition is met. Added a new doc field called "hasDefaultList" in each user collection in FS. The purpose of this addition is to load the default state "default list" based on the boolean value of hasDefaultList to conserve read operations in FS.
-2. Sidebar.jsx - Removed the "customList" dependency in useEffect. The useEffect is invoking "setCustomList" which in turn, the dependency is being updated with "customList" causing a constant re-trigger causing additional read/write operations.
+- ## Problem 2: Clicking on a task and making it "complete" renders all task items in completed collection. Why?
+  - This problem was the result of React state setter setSelectedList, FS onSnapshot listener and potentially an issue regarding data retrieval.
+  - Recreating the bug => User clicks on a list like Today => useEffect is invoked with `fetchTodoCollection()` due to its dependency _selectedList_ => User adds a task in Today => onSnapshot attaches to Today to retrieve live data => user (quickly) clicks on another list like Completed => useEffect is invoked again with `fetchTodoCollection()` also being invoked since _selectedList_ being a dependency has changed again => User goes back to Today list => User completes task in Today list => onSnaphot ends up retrieving data from Completed instead of Today list even if selectedList is currently set to Today.
+  - This bug is in part caused by the asynchronous nature of fetching data combined with _onSnapshot_.

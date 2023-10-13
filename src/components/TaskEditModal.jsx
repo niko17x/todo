@@ -1,12 +1,18 @@
 import React, { useContext, useState } from "react";
 import { DataContext } from "../App";
-import { updateFirestoreTodoFields } from "../utils/updateFirestoreTodoFields";
+import { toggleTaskCompleteField } from "../utils/toggleTaskCompletedField";
 import { editTaskOnFirestore } from "../utils/editTaskAtFirestore";
 import { addHashToTags, resetInputs } from "../utils/helpers";
 
 export const TaskEditModal = () => {
-  const { taskEditId, todoTasks, setShowTaskEditModal, showTaskEditModal } =
-    useContext(DataContext);
+  const {
+    taskEditId,
+    todoTasks,
+    setShowTaskEditModal,
+    showTaskEditModal,
+    selectedList,
+    activeUserId,
+  } = useContext(DataContext);
   const [localTaskInput, setLocalTaskInput] = useState("");
   const [localTagsInput, setLocalTagsInput] = useState("");
   const [localUrgentInput, setLocalUrgentInput] = useState(false);
@@ -14,7 +20,7 @@ export const TaskEditModal = () => {
   const [hasInteractedWithTags, setHasInteractedWithTags] = useState(false);
   const [hasInteractedWithUrgent, setHasInteractedWithUrgent] = useState(false);
 
-  const handleTaskEditInput = (taskId, e) => {
+  const handleTaskEditInput = (task, e) => {
     e.preventDefault();
     try {
       const data = {};
@@ -28,11 +34,13 @@ export const TaskEditModal = () => {
         editTaskOnFirestore(
           localTaskInput,
           localUrgentInput,
-          taskId,
-          localTagsInput
+          task.id,
+          localTagsInput,
+          selectedList,
+          activeUserId
         );
       } else {
-        updateFirestoreTodoFields(taskId, {
+        toggleTaskCompleteField(task.id, {
           ...data,
           urgentFlag: localUrgentInput,
         });
@@ -85,7 +93,7 @@ export const TaskEditModal = () => {
                   action=""
                   onSubmit={(e) => {
                     e.preventDefault();
-                    handleTaskEditInput(task.taskId, e);
+                    handleTaskEditInput(task, e);
                   }}
                 >
                   <fieldset>

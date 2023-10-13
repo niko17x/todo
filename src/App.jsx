@@ -32,8 +32,6 @@ const App = () => {
     "completed",
   ]);
 
-  console.log(selectedList);
-
   useEffect(() => {
     fetchActiveUser(setActiveUser, setActiveUserId);
   }, []);
@@ -43,8 +41,6 @@ const App = () => {
   }, [activeUserId]);
 
   useEffect(() => {
-    // loadListToFirestore(activeUserId, defaultList);
-    // !! Only load default list if user doc field "hasDefaultList" is set to false. This is to prevent any additional FS read operations:
     const loadIfNecessary = async () => {
       const docRef = await getDoc(doc(db, `users/${activeUserId}`));
       if (!docRef.data().hasDefaultList) {
@@ -57,7 +53,6 @@ const App = () => {
     if (activeUserId) {
       loadIfNecessary();
     }
-    // !!
   }, [activeUserId, defaultList]);
 
   return (

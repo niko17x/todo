@@ -5,10 +5,12 @@ export const editTaskOnFirestore = async (
   taskInput,
   urgentFlag,
   taskId,
-  tags
+  tags,
+  selectedList,
+  activeUserId
 ) => {
   try {
-    const docRef = doc(db, `todo/${taskId}`);
+    const docRef = doc(db, `todo/${activeUserId}/${selectedList}/${taskId}`);
     await updateDoc(docRef, {
       updatedAt: serverTimestamp(),
       urgentFlag: urgentFlag,
