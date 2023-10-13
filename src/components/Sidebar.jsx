@@ -9,9 +9,14 @@ import {
 } from "../utils/deleteListFromFirestore";
 
 export const Sidebar = () => {
-  const { defaultList, activeUserId, setSelectedList, selectedList } =
-    useContext(DataContext);
-  const [customList, setCustomList] = useState([]);
+  const {
+    defaultList,
+    activeUserId,
+    setSelectedList,
+    selectedList,
+    setCustomList,
+    customList,
+  } = useContext(DataContext);
   const [newListName, setNewListName] = useState("");
 
   useEffect(() => {
@@ -20,7 +25,7 @@ export const Sidebar = () => {
       setCustomList(updatedCustomList);
     };
     fetchAndUpdateCustomList();
-  }, [activeUserId]);
+  }, [activeUserId, setCustomList]);
 
   const handleAddingNewList = (e) => {
     e.preventDefault();

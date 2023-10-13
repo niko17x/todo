@@ -5,8 +5,10 @@
 // Reminder: When working on this, be sure to keep it dynamic for all lists including custom lists:
 
 - [] Handling Urgent list:
-  - [] When deleting urgent task from Today, also delete same task from Urgent.
-  - [] Completing a task in Urgent should delete the same task from Urgent as well.
+  - [check] When deleting urgent task from Today, also delete same task from Urgent.
+  - [check] Completing a task in Urgent should remove task from Urgent list.
+  - [check] Making urgent task incomplete in Completed list should return task back to Urgent (already returning back to Today).
+  - [] Deleting urgent task from Urgent list should delete the task in Today list as well.
 
 ### Tasks:
 

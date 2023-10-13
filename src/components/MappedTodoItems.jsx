@@ -6,6 +6,8 @@ import { DataContext } from "../App";
 import { toggleTaskCompleteField } from "../utils/toggleTaskCompletedField";
 import { moveTaskToCompleted } from "../utils/moveTaskToCompleted";
 import { moveTaskToToday } from "../utils/moveTaskToToday";
+import { moveTaskToUrgent } from "../utils/moveTaskToUrgent";
+import { removeDeletedTasksFromAllLists } from "../utils/removeDeletedTasksFromAllLists";
 
 export const MappedTodoItems = () => {
   const {
@@ -15,6 +17,8 @@ export const MappedTodoItems = () => {
     setTaskEditId,
     setShowTaskEditModal,
     selectedList,
+    defaultList,
+    customList,
   } = useContext(DataContext);
   const unsubscribeRef = useRef(null);
 
@@ -40,11 +44,18 @@ export const MappedTodoItems = () => {
       await deleteDoc(
         doc(db, `todo/${activeUserId}/${selectedList}/${task.id}`)
       );
-      await deleteDoc(doc(db, `todo/${activeUserId}/urgent/${task.id}`));
+      await removeDeletedTasksFromAllLists(activeUserId, task, [
+        ...defaultList,
+        ...customList,
+      ]);
     } catch (error) {
       console.log(`Error: ${error} - Occurred @ deleteTask`);
     }
   };
+
+  /** Deleting task from Today list when task is deleted from Urgent list first:
+   *
+   */
 
   const updateTaskEditIdState = async (taskId) => {
     const docRef = doc(db, `todo/${activeUserId}/${selectedList}/${taskId}`);
@@ -57,11 +68,11 @@ export const MappedTodoItems = () => {
     updateTaskEditIdState(taskId);
   };
 
-  const updateTodoTasksState = (task) => {
+  const updateTodoTasksState = (task, completeStatus) => {
     setTodoTasks((prevTasks) => {
       return prevTasks.map((t) => {
         if (t.taskId === task.taskId) {
-          return { ...t, completed: !task.completed };
+          return { ...t, completed: completeStatus };
         }
         return t;
       });
@@ -71,25 +82,19 @@ export const MappedTodoItems = () => {
   const handleTaskCompletion = async (task) => {
     const taskToggledStatus = !task.completed;
     try {
-      updateTodoTasksState(task);
+      updateTodoTasksState(task, !task.complete);
       await toggleTaskCompleteField(activeUserId, selectedList, task);
-
       if (taskToggledStatus) {
-        moveTaskToCompleted(activeUserId, task);
+        await moveTaskToCompleted(activeUserId, task);
+        await deleteDoc(doc(db, `todo/${activeUserId}/urgent/${task.id}`));
       } else {
         await moveTaskToToday(activeUserId, task);
+        await moveTaskToUrgent(activeUserId, task);
       }
     } catch (error) {
       console.log(`Error: ${error} - handleTaskCompletion`);
       // Revert optimistic UI update in case of error.
-      setTodoTasks((prevTasks) => {
-        return prevTasks.map((t) => {
-          if (t.taskId === task.taskId) {
-            return { ...t, completed: task.completed };
-          }
-          return t;
-        });
-      });
+      updateTodoTasksState(task, task.complete);
     }
   };
 

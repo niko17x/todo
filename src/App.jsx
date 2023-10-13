@@ -25,6 +25,7 @@ const App = () => {
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showTaskEditModal, setShowTaskEditModal] = useState(false);
   const [selectedList, setSelectedList] = useState("today");
+  const [customList, setCustomList] = useState([]);
   const [defaultList, setDefaultList] = useState([
     "today",
     "all",
@@ -69,6 +70,8 @@ const App = () => {
         showSignupModal,
         defaultList,
         selectedList,
+        customList,
+        setCustomList,
         setSelectedList,
         setIsUrgent,
         setTaskEditId,
