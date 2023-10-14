@@ -4,14 +4,20 @@
 
 // Reminder: When working on this, be sure to keep it dynamic for all lists including custom lists:
 
-- [] Handling Urgent list:
-  - [check] When deleting urgent task from Today, also delete same task from Urgent.
-  - [check] Completing a task in Urgent should remove task from Urgent list.
-  - [check] Making urgent task incomplete in Completed list should return task back to Urgent (already returning back to Today).
-  - [] Deleting urgent task from Urgent list should delete the task in Today list as well.
+- [] Every task added goes into All list.
+
+  - [] All list should contains UI design for each task where each task was generated from.
+
+- How To:
+  - For each task created, add a doc field called _list_ that contains the current selectedList.
+  - In the _all_ list, it should contain a sub-heading for _Today_ list and any custom lists with the respective tasks under each heading.
+    - Create the sub-heading regardless of any task inside or not as placeholders.
+    - Create a React state array that holds _today_ and any custom list to iterate and render to page.
+      - Any new user generated list should be added to this array state.
 
 ### Tasks:
 
+- [] Remove the taskInput option when selectedList is either on Urgent and Completed list.
 - [] Fix task rendering issue.
 - [] Add a calendar for user to select todo task date.
 - [] Add option to hide Sidebar.jsx.
@@ -34,8 +40,9 @@
 - [check] Adding custom lists.
 - [check] Deal with how tasks will be stored and displayed for default lists.
 - [check] Optimize read/write firestore operations.
+- [check] Handling Urgent list.
 
-- ## Problem #1: Clicking on an incomplete task in the Today list causes that same task to be duplicated in the Completed list.
+- # Problem #1: Clicking on an incomplete task in the Today list causes that same task to be duplicated in the Completed list.
 
   - If user clicks on a task, the task becomes either complete or incomplete by invoking `updateTodoTasksState()` function.
   - `updateTodoTasksState()` toggles the task.complete field to either true or false. The first click on any task will toggle task.complete to true by default.
@@ -45,7 +52,8 @@
   - If the task is toggled to false, `await addCompletedTaskToFirestore(activeUserId, task)` is invoked.
   - `await addCompletedTaskToFirestore(activeUserId, task)` => deletes the task from Completed and adds the same task to Today while updating task.complete field from false to true.
 
-- ## Problem 2: Clicking on a task and making it "complete" renders all task items in completed collection. Why?
+- # Problem 2: Clicking on a task and making it "complete" renders all task items in completed collection. Why?
+
   - ### Issue:
     - This problem was the result of React state setter setSelectedList, FS onSnapshot listener and potentially an issue regarding data retrieval.
     - Recreating the bug => User clicks on a list like Today => useEffect is invoked with `fetchTodoCollection()` due to its dependency _selectedList_ => User adds a task in Today => onSnapshot attaches to Today to retrieve live data => user (quickly) clicks on another list like Completed => useEffect is invoked again with `fetchTodoCollection()` also being invoked since _selectedList_ being a dependency has changed again => User goes back to Today list => User completes task in Today list => onSnaphot ends up retrieving data from Completed instead of Today list even if selectedList is currently set to Today.
@@ -55,3 +63,20 @@
     - The idea is to use React useRef to ensure that when one listener is active, another isn't created until the previous listener has ended. Also, using a useRef prevent a re-render.
     ### Chat GPT:
     - The provided solution addresses the possible issue of overlapping Firestore listeners by ensuring that, before setting up a new listener, any previous listener is unsubscribed. This helps prevent scenarios where older listeners might overwrite the state with stale data after a new listener has already updated it. It's important to note that the effectiveness of this solution assumes that the `fetchTodoCollection` function sets up an `onSnapshot` listener and returns its corresponding unsubscribe function. If it doesn't, adjustments to the function would be necessary.
+
+- # Problem 3: Rendering an edited UI for tasks in the "all" list taking into account for tasks coming from different lists.
+
+  - ## Issue:
+
+    - The UI should display each task inside of "all" list but tasks should also be organized according to the task.list field.
+    - If user generates custom lists, then each list should be a sub-heading within the "all" list.
+    - If there are tasks for each of these list, the tasks should appear beneath the sub-heading of their respective task.list field data.
+
+  - ## Process:
+
+  - ## Brainstorm:
+    - When mapping data for rendering, if selectedList is currently set to "all", I need to render a sub-heading for each necessary list.
+      - I need to create an array that holds the list that includes _today_ and all user generated lists.
+    - ? How am I going to connect each task list to the list sub-heading?
+      - Create a conditional where if each task being mapped is equal to the sub-heading list, then display those.
+      - The idea is to map out all tasks under _today_ then the other user generated lists.

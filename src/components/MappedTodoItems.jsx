@@ -1,7 +1,15 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { fetchTodoCollection } from "../utils/fetchTodoCollection";
 import { db } from "../lib/firebase";
-import { deleteDoc, doc, getDoc } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
+} from "firebase/firestore";
 import { DataContext } from "../App";
 import { toggleTaskCompleteField } from "../utils/toggleTaskCompletedField";
 import { moveTaskToCompleted } from "../utils/moveTaskToCompleted";
@@ -53,10 +61,6 @@ export const MappedTodoItems = () => {
     }
   };
 
-  /** Deleting task from Today list when task is deleted from Urgent list first:
-   *
-   */
-
   const updateTaskEditIdState = async (taskId) => {
     const docRef = doc(db, `todo/${activeUserId}/${selectedList}/${taskId}`);
     const docSnapshot = await getDoc(docRef);
@@ -98,40 +102,76 @@ export const MappedTodoItems = () => {
     }
   };
 
+  const listItems = ["today", ...customList];
+
+  // query all list by order of task list:
+  const foo = async () => {
+    if (!activeUserId) {
+      return;
+    }
+    const queryCollRef = query(
+      collection(db, `todo/${activeUserId}/all`),
+      orderBy("list", "desc")
+    );
+    const querySnapshot = await getDocs(queryCollRef);
+
+    querySnapshot.forEach((doc) => {
+      const docRef = doc.data().list;
+      console.log(docRef);
+    });
+  };
+
   return (
     <>
-      {todoTasks
-        .filter((task) => task.showDoc)
-        .map((task) => (
-          <div
-            className={`${
-              task.urgentFlag ? "mappedTodoItem urgent-glow" : "mappedTodoItem"
-            } ${task.completed ? "completed" : ""}`}
-            key={task.id}
-          >
-            <div onClick={() => handleTaskCompletion(task)}>
-              <p>{task.taskInput}</p>
-              <div className="tags">{task.tags}</div>
-            </div>
-            <div className="options">
-              <button
-                type="button"
-                onClick={() => {
-                  handleTaskEditClick(task.taskId);
-                }}
+      {listItems.map((listName) => {
+        const tasksForList = todoTasks.filter(
+          (task) => task.showDoc && task.list === listName
+        );
+
+        if (tasksForList.length === 0) {
+          return null;
+        }
+
+        return (
+          <div key={listName}>
+            {selectedList === "all" && (
+              <h3 className="sub-heading">{listName}</h3>
+            )}{" "}
+            {tasksForList.map((task) => (
+              <div
+                className={`${
+                  task.urgentFlag
+                    ? "mappedTodoItem urgent-glow"
+                    : "mappedTodoItem"
+                } ${task.completed ? "completed" : ""}`}
+                key={task.id}
               >
-                <img src="../../src/assets/icons/edit.svg" alt="Edit" />
-              </button>
-              <button>
-                <img
-                  src="../../src/assets/icons/trash.svg"
-                  alt="Delete"
-                  onClick={() => deleteTask(task)}
-                />
-              </button>
-            </div>
+                <div onClick={() => handleTaskCompletion(task)}>
+                  <p>{task.taskInput}</p>
+                  <div className="tags">{task.tags}</div>
+                </div>
+                <div className="options">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleTaskEditClick(task.taskId);
+                    }}
+                  >
+                    <img src="../../src/assets/icons/edit.svg" alt="Edit" />
+                  </button>
+                  <button>
+                    <img
+                      src="../../src/assets/icons/trash.svg"
+                      alt="Delete"
+                      onClick={() => deleteTask(task)}
+                    />
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+        );
+      })}
     </>
   );
 };

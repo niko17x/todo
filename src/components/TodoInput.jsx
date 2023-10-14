@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { addTodoToFirestore } from "../utils/addTaskToFirestore";
+import { addTaskToFirestore } from "../utils/addTaskToFirestore";
 import { DataContext } from "../App";
 import {
   addHashToTags,
@@ -14,6 +14,35 @@ export const TodoInput = () => {
   const [localTaskInput, setLocalTaskInput] = useState("");
   const [localTagInput, setLocalTagInput] = useState("");
 
+  const handleAddTaskToFirestore = async (hashedTags) => {
+    const todoData = {
+      activeUsername,
+      taskInput: localTaskInput,
+      urgentFlag: isUrgent,
+      activeUserId,
+      tags: hashedTags,
+      selectedList,
+      list: selectedList,
+    };
+    try {
+      const { generatedTaskId } = await addTaskToFirestore(todoData);
+      console.log(selectedList);
+      addTaskToFirestore({
+        ...todoData,
+        selectedList: "all",
+        id: generatedTaskId,
+      });
+      isUrgent &&
+        (await addTaskToFirestore({
+          ...todoData,
+          selectedList: "urgent",
+          id: generatedTaskId,
+        }));
+    } catch (error) {
+      console.log(`Error: ${error} - Occurred @ handleAddTaskToFirestore.`);
+    }
+  };
+
   const handleTaskInput = async () => {
     if (!localTaskInput) {
       displayWarningMessage(setInputIsEmpty);
@@ -21,21 +50,7 @@ export const TodoInput = () => {
     }
     try {
       const hashedTags = addHashToTags(localTagInput);
-      const todoData = {
-        activeUsername,
-        taskInput: localTaskInput,
-        urgentFlag: isUrgent,
-        activeUserId,
-        tags: hashedTags,
-        selectedList,
-      };
-      const { generatedTaskId } = await addTodoToFirestore(todoData);
-      isUrgent &&
-        addTodoToFirestore({
-          ...todoData,
-          selectedList: "urgent",
-          id: generatedTaskId,
-        });
+      handleAddTaskToFirestore(hashedTags);
     } catch (error) {
       console.log(`Error ${error} - occurred @ handleTaskInput function.`);
     }

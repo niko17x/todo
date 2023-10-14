@@ -86,6 +86,15 @@ li {
   list-style-type: none;
 }
 
+.sub-heading {
+  color: $lavendar-theme;
+  text-transform: capitalize;
+  font-size: 1.5rem;
+  opacity: 0.6;
+  max-width: 400px;
+  text-decoration: underline;
+}
+
 .container {
   .main {
     display: grid;

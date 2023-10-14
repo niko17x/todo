@@ -2,7 +2,7 @@
 import { collection, serverTimestamp, doc, setDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
 
-export const addTodoToFirestore = async ({
+export const addTaskToFirestore = async ({
   activeUsername,
   taskInput,
   urgentFlag,
@@ -10,6 +10,7 @@ export const addTodoToFirestore = async ({
   tags,
   selectedList,
   id,
+  list,
 }) => {
   try {
     const todoCollection = collection(
@@ -29,10 +30,11 @@ export const addTodoToFirestore = async ({
       updatedAt: "",
       completed: false,
       showDoc: true,
+      list: list,
     });
     const generatedTaskId = newDocRef.id;
     return { generatedTaskId };
   } catch (error) {
-    console.log(`Error ${error} - occurred @ addTodoToFirestore function.`);
+    console.log(`Error ${error} - occurred @ addTaskToFirestore function.`);
   }
 };
