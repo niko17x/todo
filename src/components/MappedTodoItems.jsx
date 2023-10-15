@@ -1,21 +1,14 @@
-import { useContext, useEffect, useRef } from "react";
+import { useCallback, useContext, useEffect, useRef } from "react";
 import { fetchTodoCollection } from "../utils/fetchTodoCollection";
 import { db } from "../lib/firebase";
-import {
-  collection,
-  deleteDoc,
-  doc,
-  getDoc,
-  getDocs,
-  orderBy,
-  query,
-} from "firebase/firestore";
+import { deleteDoc, doc, getDoc } from "firebase/firestore";
 import { DataContext } from "../App";
 import { toggleTaskCompleteField } from "../utils/toggleTaskCompletedField";
 import { moveTaskToCompleted } from "../utils/moveTaskToCompleted";
 import { moveTaskToToday } from "../utils/moveTaskToToday";
 import { moveTaskToUrgent } from "../utils/moveTaskToUrgent";
 import { removeDeletedTasksFromAllLists } from "../utils/removeDeletedTasksFromAllLists";
+import { getLengthOfList } from "../utils/getLengthOfList";
 
 export const MappedTodoItems = () => {
   const {
@@ -27,6 +20,7 @@ export const MappedTodoItems = () => {
     selectedList,
     defaultList,
     customList,
+    setListCounts,
   } = useContext(DataContext);
   const unsubscribeRef = useRef(null);
 
@@ -47,6 +41,13 @@ export const MappedTodoItems = () => {
     };
   }, [setTodoTasks, activeUserId, selectedList]);
 
+  const updateListTaskCount = () => {
+    setListCounts((prevCount) => ({
+      ...prevCount,
+      [selectedList]: prevCount[selectedList] - 1,
+    }));
+  };
+
   const deleteTask = async (task) => {
     try {
       await deleteDoc(
@@ -56,6 +57,7 @@ export const MappedTodoItems = () => {
         ...defaultList,
         ...customList,
       ]);
+      updateListTaskCount();
     } catch (error) {
       console.log(`Error: ${error} - Occurred @ deleteTask`);
     }
@@ -103,23 +105,6 @@ export const MappedTodoItems = () => {
   };
 
   const listItems = ["today", ...customList];
-
-  // query all list by order of task list:
-  const foo = async () => {
-    if (!activeUserId) {
-      return;
-    }
-    const queryCollRef = query(
-      collection(db, `todo/${activeUserId}/all`),
-      orderBy("list", "desc")
-    );
-    const querySnapshot = await getDocs(queryCollRef);
-
-    querySnapshot.forEach((doc) => {
-      const docRef = doc.data().list;
-      console.log(docRef);
-    });
-  };
 
   return (
     <>

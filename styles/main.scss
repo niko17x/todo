@@ -90,9 +90,8 @@ li {
   color: $lavendar-theme;
   text-transform: capitalize;
   font-size: 1.5rem;
-  opacity: 0.6;
+  opacity: 0.8;
   max-width: 400px;
-  text-decoration: underline;
 }
 
 .container {
@@ -420,7 +419,7 @@ li {
     margin: 0;
     padding: 2rem;
     li {
-      border: 5px solid $violet-theme;
+      border: 5px solid white;
       border-radius: 10px;
       padding: 2rem;
       background-color: $green-theme;
@@ -431,19 +430,18 @@ li {
       max-width: 155px;
     }
   }
-  .userGeneratedCategories {
+  .userCreatedList {
     display: grid;
     gap: 1rem;
     font-weight: 600;
-    font-size: 1.4rem;
+    font-size: 1.1rem;
     max-width: 155px;
-
     .custom-list {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: 5fr 1fr 1fr;
       border: transparent;
-      border-radius: 10px;
-      padding: 0 1rem 0 1rem;
+      border-radius: 5px;
+      padding: 10px;
       cursor: pointer;
     }
     .task-quantity {
@@ -452,6 +450,9 @@ li {
       justify-self: flex-end;
       font-size: 0.8rem;
       opacity: 40%;
+    }
+    li {
+      width: 155px;
     }
     img {
       display: grid;

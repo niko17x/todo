@@ -4,16 +4,7 @@
 
 // Reminder: When working on this, be sure to keep it dynamic for all lists including custom lists:
 
-- [] Every task added goes into All list.
-
-  - [] All list should contains UI design for each task where each task was generated from.
-
-- How To:
-  - For each task created, add a doc field called _list_ that contains the current selectedList.
-  - In the _all_ list, it should contain a sub-heading for _Today_ list and any custom lists with the respective tasks under each heading.
-    - Create the sub-heading regardless of any task inside or not as placeholders.
-    - Create a React state array that holds _today_ and any custom list to iterate and render to page.
-      - Any new user generated list should be added to this array state.
+- [] when adding a new list to collection, the default task should contain a document field _showDoc_ where it will equal false.
 
 ### Tasks:
 
@@ -27,6 +18,7 @@
 
 ### Completed Tasks (filtered: latest completion @ end):
 
+- [check] Every task added goes into All list.
 - [check] Show todo tasks only for the respective signed in user.
 - [check] Edit button functionality in todo task items.
 - [check] Guest user can create tasks.
@@ -80,3 +72,7 @@
     - ? How am I going to connect each task list to the list sub-heading?
       - Create a conditional where if each task being mapped is equal to the sub-heading list, then display those.
       - The idea is to map out all tasks under _today_ then the other user generated lists.
+
+Goal: Update the custom list total task count when user deletes a task:
+if user deletes a task, invoke _deleteTask()_.
+update setListCounts state to reduce total task by 1

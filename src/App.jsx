@@ -25,6 +25,7 @@ const App = () => {
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showTaskEditModal, setShowTaskEditModal] = useState(false);
   const [selectedList, setSelectedList] = useState("today");
+  const [listCounts, setListCounts] = useState({});
   const [customList, setCustomList] = useState([]);
   const [defaultList, setDefaultList] = useState([
     "today",
@@ -71,6 +72,8 @@ const App = () => {
         defaultList,
         selectedList,
         customList,
+        listCounts,
+        setListCounts,
         setCustomList,
         setSelectedList,
         setIsUrgent,
@@ -92,7 +95,9 @@ const App = () => {
 
         <div className="main">
           <div className="taskComponents">
-            <TodoInput />
+            {selectedList !== "all" &&
+              selectedList !== "urgent" &&
+              selectedList !== "completed" && <TodoInput />}
             <MappedTodoItems />
           </div>
           <Sidebar />

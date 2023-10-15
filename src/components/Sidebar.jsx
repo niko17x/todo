@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { DataContext } from "../App";
 import { addNewListToFirestore } from "../utils/addListToFirestore";
 import { updateCustomListInFirestore } from "../utils/updateCustomListInFirestore";
@@ -7,6 +7,7 @@ import {
   deleteListFromField,
   deleteListFromFirestore,
 } from "../utils/deleteListFromFirestore";
+import { getLengthOfList } from "../utils/getLengthOfList";
 
 export const Sidebar = () => {
   const {
@@ -16,6 +17,8 @@ export const Sidebar = () => {
     selectedList,
     setCustomList,
     customList,
+    listCounts,
+    setListCounts,
   } = useContext(DataContext);
   const [newListName, setNewListName] = useState("");
 
@@ -26,6 +29,21 @@ export const Sidebar = () => {
     };
     fetchAndUpdateCustomList();
   }, [activeUserId, setCustomList]);
+
+  const memoizedGetLengthOfList = useCallback(
+    (list) => getLengthOfList(list, activeUserId),
+    [activeUserId]
+  );
+
+  useEffect(() => {
+    const fetchCount = async (list) => {
+      const count = await memoizedGetLengthOfList(list);
+      setListCounts((prevCounts) => ({ ...prevCounts, [list]: count }));
+    };
+    customList.forEach((list) => {
+      fetchCount(list);
+    });
+  }, [customList, memoizedGetLengthOfList, setListCounts]);
 
   const handleAddingNewList = (e) => {
     e.preventDefault();
@@ -75,7 +93,7 @@ export const Sidebar = () => {
   const mapCustomList = () => {
     return (
       <form onSubmit={handleAddingNewList}>
-        <ul className="userGeneratedCategories">
+        <ul className="userCreatedList">
           {customList.map((list, index) => {
             return (
               <div
@@ -86,7 +104,7 @@ export const Sidebar = () => {
                 onClick={() => setSelectedList(list)}
               >
                 <li>{list}</li>
-                <div className="task-quantity">7</div>
+                <div className="task-quantity">{listCounts[list] || "..."}</div>
                 <img
                   src="../../src/assets/icons/trash.svg"
                   onClick={() => handleListDeletion(list)}
