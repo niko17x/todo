@@ -16,7 +16,12 @@ module.exports = {
     // * Begin React Rules:
 
     "react/prop-types": 0,
-    "no-unused-vars": "off", // "import/no-unresolved": "error", // "import/named": "error", // "import/default": "error", // "import/namespace": "error", // "import/export": "error", // "import/no-named-as-default": "error", // "import/no-named-as-default-member": "error", // "import/no-extraneous-dependencies": "error", // * End React Rules: // Personal comments do not require empty lines:
+    "no-unused-vars": "off", // "import/no-unresolved": "error", // "import/named": "error", // "import/default": "error", // "import/namespace": "error", // "import/export": "error", // "import/no-named-as-default": "error", // "import/no-named-as-default-member": "error", // "import/no-extraneous-dependencies": "error",
+
+    // * End React Rules: //
+
+    // * Javascript Rules: //
+
     "lines-around-comment": [
       "error",
       {
@@ -58,6 +63,7 @@ module.exports = {
     "max-len": [
       "error",
       {
+        code: 120,
         ignoreComments: true,
         ignoreUrls: true,
         ignoreStrings: true,

@@ -1,19 +1,15 @@
 import React, { useContext, useState } from "react";
-import { DataContext } from "../App";
 import { toggleTaskCompleteField } from "../utils/toggleTaskCompletedField";
+import { ListContext, ModalContext, TaskContext, UserContext } from "../App";
 import { editTaskOnFirestore } from "../utils/editTaskAtFirestore";
 import { addHashToTags, resetInputs } from "../utils/helpers";
 import { moveTaskToUrgent } from "../utils/moveTaskToUrgent";
 
 export const TaskEditModal = () => {
-  const {
-    taskEditId,
-    todoTasks,
-    setShowTaskEditModal,
-    showTaskEditModal,
-    selectedList,
-    activeUserId,
-  } = useContext(DataContext);
+  const { taskEditId, todoTasks } = useContext(TaskContext);
+  const { setShowTaskEditModal, showTaskEditModal } = useContext(ModalContext);
+  const { selectedList } = useContext(ListContext);
+  const { activeUserId } = useContext(UserContext);
   const [localTaskInput, setLocalTaskInput] = useState("");
   const [localTagsInput, setLocalTagsInput] = useState("");
   const [localUrgentInput, setLocalUrgentInput] = useState(false);
@@ -71,7 +67,6 @@ export const TaskEditModal = () => {
 
   return (
     <div className={showTaskEditModal ? "overlay" : ""}>
-      {/* {console.log(taskEditId)} */}
       <div className="taskEditModal modal">
         {todoTasks.map((task) => {
           if (task.id === taskEditId) {

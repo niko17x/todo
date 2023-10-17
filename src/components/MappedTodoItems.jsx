@@ -2,7 +2,7 @@ import { useContext, useEffect, useRef } from "react";
 import { fetchTodoCollection } from "../utils/fetchTodoCollection";
 import { db } from "../lib/firebase";
 import { deleteDoc, doc, getDoc } from "firebase/firestore";
-import { DataContext } from "../App";
+import { ListContext, ModalContext, TaskContext, UserContext } from "../App";
 import { toggleTaskCompleteField } from "../utils/toggleTaskCompletedField";
 import { moveTaskToCompleted } from "../utils/moveTaskToCompleted";
 import { moveTaskToToday } from "../utils/moveTaskToToday";
@@ -11,17 +11,12 @@ import { removeDeletedTasksFromAllLists } from "../utils/removeDeletedTasksFromA
 import { updateCustomListTaskCount } from "../utils/updateCustomListTaskCount";
 
 export const MappedTodoItems = () => {
-  const {
-    activeUserId,
-    todoTasks,
-    setTodoTasks,
-    setTaskEditId,
-    setShowTaskEditModal,
-    selectedList,
-    defaultList,
-    customList,
-    setListCounts,
-  } = useContext(DataContext);
+  const { activeUserId } = useContext(UserContext);
+  const { setShowTaskEditModal } = useContext(ModalContext);
+  const { todoTasks, setTodoTasks, setTaskEditId } = useContext(TaskContext);
+  const { selectedList, defaultList, customList, setListCounts } =
+    useContext(ListContext);
+
   const unsubscribeRef = useRef(null);
   const listItems = ["today", ...customList];
   const everyListItem = [...defaultList, ...customList];
@@ -80,10 +75,13 @@ export const MappedTodoItems = () => {
 
   const handleTaskCompletion = async (task) => {
     const taskToggledStatus = !task.completed;
+
     try {
-      updateTodoTasksState(task, !task.completed);
+      updateTodoTasksState(task, taskToggledStatus);
       await toggleTaskCompleteField(activeUserId, selectedList, task);
+
       taskOriginatedList.current = task.list;
+
       if (taskToggledStatus) {
         await moveTaskToCompleted(activeUserId, task, everyListItem);
         updateCustomListTaskCount(
@@ -98,7 +96,7 @@ export const MappedTodoItems = () => {
           "add"
         );
         await moveTaskToToday(activeUserId, task);
-        // await moveTaskToUrgent(activeUserId, task);
+        await moveTaskToUrgent(activeUserId, task);
       }
     } catch (error) {
       console.log(`Error: ${error} - handleTaskCompletion`);

@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { addTaskToFirestore } from "../utils/addTaskToFirestore";
-import { DataContext } from "../App";
+import { ListContext, TaskContext, UserContext } from "../App";
 import {
   addHashToTags,
   displayWarningMessage,
@@ -9,14 +9,9 @@ import {
 import { updateCustomListTaskCount } from "../utils/updateCustomListTaskCount.js";
 
 export const TodoInput = () => {
-  const {
-    activeUsername,
-    activeUserId,
-    isUrgent,
-    setIsUrgent,
-    selectedList,
-    setListCounts,
-  } = useContext(DataContext);
+  const { activeUsername, activeUserId } = useContext(UserContext);
+  const { isUrgent, setIsUrgent } = useContext(TaskContext);
+  const { selectedList, setListCounts } = useContext(ListContext);
   const [inputIsEmpty, setInputIsEmpty] = useState(null);
   const [localTaskInput, setLocalTaskInput] = useState("");
   const [localTagInput, setLocalTagInput] = useState("");
@@ -33,8 +28,7 @@ export const TodoInput = () => {
     };
     try {
       const { generatedTaskId } = await addTaskToFirestore(todoData);
-      // TODO: Optimize the 2 identical functions below to prevent any *race conditions*:
-      addTaskToFirestore({
+      await addTaskToFirestore({
         ...todoData,
         selectedList: "all",
         id: generatedTaskId,

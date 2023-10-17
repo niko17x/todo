@@ -1,18 +1,14 @@
 import React, { useContext, useState } from "react";
-import { DataContext } from "../App";
+import { ModalContext, UserContext } from "../App";
 import { signInUser } from "../utils/authServices";
 import { hideAllModal, toggleModalView } from "../utils/helpers";
 import UseFetchUsername from "../utils/fetchUsername";
 import { deleteGuestTasks } from "../utils/deleteGuestTasks";
 
 export const LoginModal = () => {
-  const {
-    showLoginModal,
-    setShowLoginModal,
-    setShowSignupModal,
-    setActiveUsername,
-    setActiveUser,
-  } = useContext(DataContext);
+  const { showLoginModal, setShowLoginModal, setShowSignupModal } =
+    useContext(ModalContext);
+  const { setActiveUsername, setActiveUser } = useContext(UserContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 

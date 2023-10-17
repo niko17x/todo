@@ -1,16 +1,16 @@
 import React, { useContext } from "react";
-import { DataContext } from "../App";
+import { ModalContext, UserContext } from "../App";
 import { signOutUser } from "../utils/authServices";
 
 const Navbar = () => {
   const {
     activeUser,
     activeUsername,
-    setShowLoginModal,
     setActiveUser,
     setActiveUsername,
     setActiveUserId,
-  } = useContext(DataContext);
+  } = useContext(UserContext);
+  const { setShowLoginModal } = useContext(ModalContext);
 
   const handleUserSignout = () => {
     signOutUser();

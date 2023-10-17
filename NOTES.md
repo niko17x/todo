@@ -80,3 +80,5 @@
     - Store the _clicked on task ID data within Completed_ to a React state to hold.
     - Use _list_ field as a parameter for the FS pathway along with the stored task ID.
     - Using this data, we can reference the originating list and restore the task when task becomes incomplete.
+
+- # Problem 5: Currently when adding a new task with urgent flag being true, the urgent task is being added to the Urgent list at this point.

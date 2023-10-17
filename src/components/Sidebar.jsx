@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { DataContext } from "../App";
+import { ListContext, UserContext } from "../App";
 import { addNewListToFirestore } from "../utils/addListToFirestore";
 import { updateCustomListInFirestore } from "../utils/updateCustomListInFirestore";
 import { updateCustomListState } from "../utils/updateCustomListState";
@@ -10,16 +10,16 @@ import {
 import { getLengthOfList } from "../utils/getLengthOfList";
 
 export const Sidebar = () => {
+  const { activeUserId } = useContext(UserContext);
   const {
     defaultList,
-    activeUserId,
     setSelectedList,
     selectedList,
     setCustomList,
     customList,
     listCounts,
     setListCounts,
-  } = useContext(DataContext);
+  } = useContext(ListContext);
   const [newListName, setNewListName] = useState("");
 
   useEffect(() => {
