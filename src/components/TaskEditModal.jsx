@@ -3,6 +3,7 @@ import { DataContext } from "../App";
 import { toggleTaskCompleteField } from "../utils/toggleTaskCompletedField";
 import { editTaskOnFirestore } from "../utils/editTaskAtFirestore";
 import { addHashToTags, resetInputs } from "../utils/helpers";
+import { moveTaskToUrgent } from "../utils/moveTaskToUrgent";
 
 export const TaskEditModal = () => {
   const {
@@ -39,8 +40,9 @@ export const TaskEditModal = () => {
           selectedList,
           activeUserId
         );
+        // localUrgentInput && moveTaskToUrgent(activeUserId, task)
       } else {
-        toggleTaskCompleteField(task.id, {
+        toggleTaskCompleteField(activeUserId, selectedList, task.id, data, {
           ...data,
           urgentFlag: localUrgentInput,
         });
@@ -69,11 +71,12 @@ export const TaskEditModal = () => {
 
   return (
     <div className={showTaskEditModal ? "overlay" : ""}>
+      {/* {console.log(taskEditId)} */}
       <div className="taskEditModal modal">
         {todoTasks.map((task) => {
-          if (task.taskId === taskEditId) {
+          if (task.id === taskEditId) {
             return (
-              <div className="show" key={task.taskId}>
+              <div className="show" key={task.id}>
                 <button
                   className="close"
                   type="button"
@@ -121,7 +124,7 @@ export const TaskEditModal = () => {
                       <div className="urgent">
                         <img
                           className="img-urgent"
-                          src="../src/assets/icons/exclamation.svg"
+                          src="../src/assets/icons/urgent.svg"
                           alt="hourglass"
                         />
                         <label htmlFor="checkbox">
@@ -141,7 +144,7 @@ export const TaskEditModal = () => {
                       </div>
                     </div>
                   </fieldset>
-                  <button className="btn-submit" type="submit">
+                  <button className="submit" type="submit">
                     Submit
                   </button>
                 </form>

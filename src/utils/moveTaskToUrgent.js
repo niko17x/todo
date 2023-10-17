@@ -1,6 +1,6 @@
 // When urgent task is in Completed list and becomes incomplete again, move urgent task back to Urgent list.
 
-import { collection, doc, writeBatch } from "firebase/firestore";
+import { doc, writeBatch } from "firebase/firestore";
 import { db } from "../lib/firebase";
 
 export const moveTaskToUrgent = async (activeUserId, task) => {

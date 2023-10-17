@@ -86,22 +86,22 @@ li {
   list-style-type: none;
 }
 
+.submit {
+  background-color: transparent;
+  height: 3rem;
+  width: 7rem;
+  color: white;
+  border: 4px solid white;
+  border-radius: 5px;
+  font-size: 1.5rem;
+}
+
 .sub-heading {
   color: $lavendar-theme;
   text-transform: capitalize;
   font-size: 1.5rem;
   opacity: 0.8;
   max-width: 400px;
-}
-
-.container {
-  .main {
-    display: grid;
-    grid-template-columns: 2fr 5fr;
-    .taskComponents {
-      grid-column-start: 2;
-    }
-  }
 }
 
 .modal-link {
@@ -143,10 +143,21 @@ li {
 }
 
 .selected {
-  border: 2px solid $lavendar-theme;
-  box-shadow: 0 0 2px $lavendar-theme, 0 0 6px $lavendar-theme,
-    0 0 10px $lavendar-theme, 0 0 15px $lavendar-theme, 0 0 19px $lavendar-theme,
-    0 0 22px #ff8000, 0 0 25px #ff8000;
+  border: 2px solid white;
+  box-shadow: 0 0 2px white, 0 0 6px white, 0 0 10px white, 0 0 15px white,
+    0 0 19px white, 0 0 22px $pink-theme, 0 0 25px $pink-theme;
+}
+
+// * App.js //
+
+.container {
+  .main {
+    display: grid;
+    grid-template-columns: 2fr 5fr;
+    .taskComponents {
+      grid-column-start: 2;
+    }
+  }
 }
 
 // * Navbar.jsx //
@@ -160,8 +171,9 @@ li {
   p {
     padding-left: 1rem;
     font-weight: 800;
-    font-size: 3rem;
-    color: $violet-theme;
+    font-size: 3.2rem;
+    // color: $violet-theme;
+    color: white;
   }
   button {
     width: fit-content;
@@ -199,8 +211,9 @@ li {
     border: none;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+    gap: 2rem;
     height: 100%;
+    align-items: center;
   }
   button {
     grid-row-start: 1;
@@ -212,11 +225,17 @@ li {
     font-size: 1.2rem;
     background: transparent;
   }
-  img {
-    height: 100%;
+  button:hover {
+    transform-origin: 50% 50%;
   }
   input {
     color: white;
+  }
+  .urgent {
+    height: 42px;
+  }
+  .plus {
+    height: 70px;
   }
   .options {
     grid-column-start: 1;
@@ -293,16 +312,26 @@ li {
 
 // * MappedTodo.jsx //
 
-.mappedTodoItem {
-  display: grid;
-  border: $border;
-  grid-template-columns: 4fr 1fr;
-  margin-top: 2rem;
-  padding: 1rem;
-  border: $border;
-  border-radius: 5px;
-  background-color: $green-theme;
-  width: 48rem;
+.mappedTodoItems {
+  .tasks {
+    display: grid;
+    border: $border;
+    grid-template-columns: 4fr 1fr;
+    margin-top: 2rem;
+    padding: 1rem;
+    border: $border;
+    border-radius: 5px;
+    background-color: $green-theme;
+    width: 48rem;
+  }
+  .total-tasks {
+    // margin-left: 3rem;
+  }
+  .list-title {
+    color: white;
+    font-size: 3rem;
+    text-transform: capitalize;
+  }
   cursor: pointer;
   p {
     font-size: $text-fontSize;
@@ -369,6 +398,10 @@ li {
   .img-urgent {
     height: 40px;
   }
+  .submit {
+    height: 3rem;
+    width: 7rem;
+  }
   input[type="checkbox"] {
     height: 38px;
     width: 38px;
@@ -383,15 +416,6 @@ li {
   }
   input[type="checkbox"]:checked::before {
     transform: scale(1);
-  }
-  .btn-submit {
-    background-color: transparent;
-    height: 3rem;
-    width: 7rem;
-    color: white;
-    border: 4px solid white;
-    border-radius: 5px;
-    font-size: 1.5rem;
   }
   form {
     display: grid;
@@ -410,8 +434,24 @@ li {
   padding: 1rem;
   display: grid;
   grid-template-columns: 1fr min-content;
+  .my-list {
+    padding-top: 2rem;
+  }
+  .chevron {
+    cursor: pointer;
+    transition: transform 0.3s;
+    transform-origin: center;
+    height: 1.5rem;
+  }
+  .chevron:hover {
+    transform: scale(1.3);
+  }
   .divider {
     border-top: 5px solid $pink-theme;
+  }
+  .submit {
+    width: 100%;
+    height: 100%;
   }
   .defaultList {
     display: grid;
@@ -422,7 +462,6 @@ li {
       border: 5px solid white;
       border-radius: 10px;
       padding: 2rem;
-      background-color: $green-theme;
       text-align: left;
       font-weight: 600;
       font-size: 1.7rem;
@@ -443,6 +482,11 @@ li {
       border-radius: 5px;
       padding: 10px;
       cursor: pointer;
+      div,
+      img {
+        display: grid;
+        place-self: center;
+      }
     }
     .task-quantity {
       display: grid;
@@ -465,17 +509,5 @@ li {
     img:hover {
       transform: scale(1.3);
     }
-  }
-  .my-list {
-    padding-top: 2rem;
-  }
-  .chevron {
-    cursor: pointer;
-    transition: transform 0.3s;
-    transform-origin: center;
-    height: 1.5rem;
-  }
-  .chevron:hover {
-    transform: scale(1.3);
   }
 }

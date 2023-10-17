@@ -1,3 +1,5 @@
+// Helpers related to Modal components.
+
 export const toggleModalView = (setShowLoginModal, setShowSignupModal) => {
   setShowLoginModal((prev) => !prev);
   setShowSignupModal((prev) => !prev);

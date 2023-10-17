@@ -3,18 +3,28 @@
 import { writeBatch, doc } from "firebase/firestore";
 import { db } from "../lib/firebase";
 
-export const moveTaskToCompleted = async (activeUserId, task) => {
+const generateDocRef = (userId, listName, taskId) => {
+  return doc(db, `todo/${userId}/${listName}/${taskId}`);
+};
+
+export const moveTaskToCompleted = async (
+  activeUserId,
+  task,
+  everyListItem
+) => {
   const batch = writeBatch(db);
-  const todayTaskRef = doc(db, `todo/${activeUserId}/today/${task.id}`);
-  // Reference to where it should go in the "completed" collection.
-  // Note: It's often better to keep the original doc ID when moving between collections to avoid issues with relations or references.
-  const completedTaskRef = doc(db, `todo/${activeUserId}/completed/${task.id}`);
+  const completedTaskRef = generateDocRef(activeUserId, "completed", task.id);
+  batch.set(completedTaskRef, { ...task, completed: true });
+
+  everyListItem.forEach((list) => {
+    const listRef = generateDocRef(activeUserId, list, task.id);
+    batch.delete(listRef);
+  });
 
   try {
     batch.set(completedTaskRef, { ...task, completed: true });
-    batch.delete(todayTaskRef);
     await batch.commit();
   } catch (error) {
-    console.error("Error moving task to completed:", error);
+    console.error(`Error: ${error} - Occurred @ moveTaskToCompleted.`);
   }
 };

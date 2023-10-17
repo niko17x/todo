@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { fetchTodoCollection } from "../utils/fetchTodoCollection";
 import { db } from "../lib/firebase";
 import { deleteDoc, doc, getDoc } from "firebase/firestore";
@@ -8,7 +8,7 @@ import { moveTaskToCompleted } from "../utils/moveTaskToCompleted";
 import { moveTaskToToday } from "../utils/moveTaskToToday";
 import { moveTaskToUrgent } from "../utils/moveTaskToUrgent";
 import { removeDeletedTasksFromAllLists } from "../utils/removeDeletedTasksFromAllLists";
-import { getLengthOfList } from "../utils/getLengthOfList";
+import { updateCustomListTaskCount } from "../utils/updateCustomListTaskCount";
 
 export const MappedTodoItems = () => {
   const {
@@ -23,6 +23,8 @@ export const MappedTodoItems = () => {
     setListCounts,
   } = useContext(DataContext);
   const unsubscribeRef = useRef(null);
+  const listItems = ["today", ...customList];
+  const everyListItem = [...defaultList, ...customList];
 
   useEffect(() => {
     // Ensure that there is only 1 active listener:
@@ -41,37 +43,27 @@ export const MappedTodoItems = () => {
     };
   }, [setTodoTasks, activeUserId, selectedList]);
 
-  const updateListTaskCount = () => {
-    setListCounts((prevCount) => ({
-      ...prevCount,
-      [selectedList]: prevCount[selectedList] - 1,
-    }));
-  };
-
   const deleteTask = async (task) => {
     try {
       await deleteDoc(
         doc(db, `todo/${activeUserId}/${selectedList}/${task.id}`)
       );
-      await removeDeletedTasksFromAllLists(activeUserId, task, [
-        ...defaultList,
-        ...customList,
-      ]);
-      updateListTaskCount();
+      await removeDeletedTasksFromAllLists(activeUserId, task, [everyListItem]);
+      updateCustomListTaskCount(setListCounts, selectedList, "subtract");
     } catch (error) {
       console.log(`Error: ${error} - Occurred @ deleteTask`);
     }
   };
 
-  const updateTaskEditIdState = async (taskId) => {
-    const docRef = doc(db, `todo/${activeUserId}/${selectedList}/${taskId}`);
+  const updateTaskEditId = async (task) => {
+    const docRef = doc(db, `todo/${activeUserId}/${selectedList}/${task.id}`);
     const docSnapshot = await getDoc(docRef);
-    setTaskEditId(docSnapshot.data().taskId);
+    setTaskEditId(docSnapshot.id);
   };
 
-  const handleTaskEditClick = (taskId) => {
+  const handleTaskEditClick = (task) => {
     setShowTaskEditModal(true);
-    updateTaskEditIdState(taskId);
+    updateTaskEditId(task);
   };
 
   const updateTodoTasksState = (task, completeStatus) => {
@@ -91,7 +83,8 @@ export const MappedTodoItems = () => {
       updateTodoTasksState(task, !task.complete);
       await toggleTaskCompleteField(activeUserId, selectedList, task);
       if (taskToggledStatus) {
-        await moveTaskToCompleted(activeUserId, task);
+        await moveTaskToCompleted(activeUserId, task, everyListItem);
+        // ! What is this?
         await deleteDoc(doc(db, `todo/${activeUserId}/urgent/${task.id}`));
       } else {
         await moveTaskToToday(activeUserId, task);
@@ -104,10 +97,9 @@ export const MappedTodoItems = () => {
     }
   };
 
-  const listItems = ["today", ...customList];
-
   return (
-    <>
+    <div className="mappedTodoItems">
+      <h2 className="list-title">{selectedList}</h2>
       {listItems.map((listName) => {
         const tasksForList = todoTasks.filter(
           (task) => task.showDoc && task.list === listName
@@ -125,9 +117,7 @@ export const MappedTodoItems = () => {
             {tasksForList.map((task) => (
               <div
                 className={`${
-                  task.urgentFlag
-                    ? "mappedTodoItem urgent-glow"
-                    : "mappedTodoItem"
+                  task.urgentFlag ? "tasks urgent-glow" : "tasks"
                 } ${task.completed ? "completed" : ""}`}
                 key={task.id}
               >
@@ -139,7 +129,7 @@ export const MappedTodoItems = () => {
                   <button
                     type="button"
                     onClick={() => {
-                      handleTaskEditClick(task.taskId);
+                      handleTaskEditClick(task);
                     }}
                   >
                     <img src="../../src/assets/icons/edit.svg" alt="Edit" />
@@ -157,6 +147,6 @@ export const MappedTodoItems = () => {
           </div>
         );
       })}
-    </>
+    </div>
   );
 };

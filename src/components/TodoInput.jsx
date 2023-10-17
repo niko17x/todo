@@ -6,10 +6,17 @@ import {
   displayWarningMessage,
   resetInputs,
 } from "../utils/helpers";
+import { updateCustomListTaskCount } from "../utils/updateCustomListTaskCount.js";
 
 export const TodoInput = () => {
-  const { activeUsername, activeUserId, isUrgent, setIsUrgent, selectedList } =
-    useContext(DataContext);
+  const {
+    activeUsername,
+    activeUserId,
+    isUrgent,
+    setIsUrgent,
+    selectedList,
+    setListCounts,
+  } = useContext(DataContext);
   const [inputIsEmpty, setInputIsEmpty] = useState(null);
   const [localTaskInput, setLocalTaskInput] = useState("");
   const [localTagInput, setLocalTagInput] = useState("");
@@ -26,7 +33,6 @@ export const TodoInput = () => {
     };
     try {
       const { generatedTaskId } = await addTaskToFirestore(todoData);
-      console.log(selectedList);
       addTaskToFirestore({
         ...todoData,
         selectedList: "all",
@@ -38,6 +44,7 @@ export const TodoInput = () => {
           selectedList: "urgent",
           id: generatedTaskId,
         }));
+      updateCustomListTaskCount(setListCounts, selectedList, "add");
     } catch (error) {
       console.log(`Error: ${error} - Occurred @ handleAddTaskToFirestore.`);
     }
@@ -89,7 +96,7 @@ export const TodoInput = () => {
             onChange={(e) => setLocalTagInput(e.target.value)}
           />
           <fieldset>
-            <img src="../src/assets/icons/exclamation.svg" />
+            <img className="urgent" src="../src/assets/icons/urgent.svg" />
             <label className="form-control" htmlFor="checkbox">
               <input
                 type="checkbox"
@@ -101,7 +108,7 @@ export const TodoInput = () => {
           </fieldset>
         </div>
         <button type="submit">
-          <img src="../src/assets/icons/plus.svg" />
+          <img className="plus" src="../src/assets/icons/plus.svg" />
         </button>
       </form>
     </div>

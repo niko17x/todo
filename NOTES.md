@@ -4,20 +4,18 @@
 
 // Reminder: When working on this, be sure to keep it dynamic for all lists including custom lists:
 
-- [] when adding a new list to collection, the default task should contain a document field _showDoc_ where it will equal false.
-
 ### Tasks:
 
-- [] Remove the taskInput option when selectedList is either on Urgent and Completed list.
-- [] Fix task rendering issue.
 - [] Add a calendar for user to select todo task date.
-- [] Add option to hide Sidebar.jsx.
 - [] Option to delete all completed tasks.
-  - Implement a "main" button that allows user to delete completed tasks (on any given list).
-- [] Redesign custom list input element.
+- [] Allow task editing to be done directly on input element.
+- [] Inside of taskEditModal, allow user to move current task to another list made by the user.
 
 ### Completed Tasks (filtered: latest completion @ end):
 
+- [check] Fix task rendering issue.
+- [check] Remove the taskInput option when selectedList is either on Urgent and Completed list.
+- [check] when adding a new list to collection, the default task should contain a document field _showDoc_ where it will equal false. This field will be used to determine the rendering for total task count for each custom list.
 - [check] Every task added goes into All list.
 - [check] Show todo tasks only for the respective signed in user.
 - [check] Edit button functionality in todo task items.
@@ -73,6 +71,10 @@
       - Create a conditional where if each task being mapped is equal to the sub-heading list, then display those.
       - The idea is to map out all tasks under _today_ then the other user generated lists.
 
-Goal: Update the custom list total task count when user deletes a task:
-if user deletes a task, invoke _deleteTask()_.
-update setListCounts state to reduce total task by 1
+# Goal: Trying to edit a task from any list other than _today_ is causing the code to crash.
+
+- in the `MappedTodoItems` component, we handle the task editing by invoking `handleTaskEditClick` function.
+- this function will then invoke `updateTaskEditId` which will retrieve data from FS and invoke `setTaskEditId` state setter with the id of the task that was clicked on. At this point, we have access to the same task ID in the `taskEditId` state.
+- In the `TaskEditModal` component, we use the data from `taskEditId` to check if that ID matches one of the tasks being mapped within the current list you're on.
+- Bug => Upon logging `taskEditId` here, there is no data being returned or undefined if I am not currently on the 'today' list.
+  - Logging `taskEditId` on the `App` component is rendering no data as well for the same conditions as stated above.

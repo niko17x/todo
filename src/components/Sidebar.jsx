@@ -120,7 +120,9 @@ export const Sidebar = () => {
             maxLength={17}
             onChange={(e) => setNewListName(e.target.value)}
           />
-          <button type="submit">+</button>
+          <button className="submit " type="submit">
+            +
+          </button>
         </ul>
       </form>
     );
@@ -134,11 +136,6 @@ export const Sidebar = () => {
         <div className="my-list">My Lists :</div>
         {mapCustomList()}
       </div>
-      <img
-        className="chevron"
-        src="../../src/assets/icons/chevron.svg"
-        alt="chevron"
-      />
     </div>
   );
 };

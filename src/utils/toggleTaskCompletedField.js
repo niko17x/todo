@@ -1,7 +1,7 @@
 // Toggle task.completed when invoked.
 
 import { db } from "../lib/firebase";
-import { doc, updateDoc, serverTimestamp, getDoc } from "firebase/firestore";
+import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 
 export const toggleTaskCompleteField = async (
   activeUserId,
@@ -9,12 +9,14 @@ export const toggleTaskCompleteField = async (
   task,
   data
 ) => {
+  if (!activeUserId) {
+    return;
+  }
   try {
     const docRef = doc(db, `todo/${activeUserId}/${selectedList}/${task.id}`);
     await updateDoc(docRef, {
       ...data,
       updatedAt: serverTimestamp(),
-      completed: !task.completed,
     });
   } catch (error) {
     console.log(
