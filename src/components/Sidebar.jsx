@@ -48,10 +48,11 @@ export const Sidebar = () => {
   const handleAddingNewList = (e) => {
     e.preventDefault();
     if (newListName.trim()) {
-      setCustomList((prev) => [...prev, newListName]);
+      const lowerCaseNewListName = newListName.toLowerCase();
+      setCustomList((prev) => [...prev, lowerCaseNewListName]);
       try {
-        updateCustomListInFirestore(activeUserId, newListName);
-        addNewListToFirestore(activeUserId, newListName);
+        updateCustomListInFirestore(activeUserId, lowerCaseNewListName);
+        addNewListToFirestore(activeUserId, lowerCaseNewListName);
         setNewListName("");
       } catch (error) {
         console.log(`Error: ${error} - handleAddingNewList`);

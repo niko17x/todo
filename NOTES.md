@@ -10,6 +10,8 @@
 - [] Option to delete all completed tasks.
 - [] Allow task editing to be done directly on input element.
 - [] Inside of taskEditModal, allow user to move current task to another list made by the user.
+- [] Custom list should be lower case for consistency like default list.
+- [] Implementing useMemo for expensive calculations over useEffect.
 
 ### Completed Tasks (filtered: latest completion @ end):
 
@@ -71,10 +73,10 @@
       - Create a conditional where if each task being mapped is equal to the sub-heading list, then display those.
       - The idea is to map out all tasks under _today_ then the other user generated lists.
 
-# Goal: Trying to edit a task from any list other than _today_ is causing the code to crash.
+- # Problem 4: In a custom list, I can create a new task then complete it. I can now go to the Completed list and click on it again to make the task incomplete. The task does this correctly: 1. goes back to All list under correct sub-heading (which is the custom list name) // 2. Task gets deleted from Completed list. Here is what incorrectly happens: 1. Task gets added to Today list even when task was originally generated from custom list // 2. Task does not go back to custom list.
 
-- in the `MappedTodoItems` component, we handle the task editing by invoking `handleTaskEditClick` function.
-- this function will then invoke `updateTaskEditId` which will retrieve data from FS and invoke `setTaskEditId` state setter with the id of the task that was clicked on. At this point, we have access to the same task ID in the `taskEditId` state.
-- In the `TaskEditModal` component, we use the data from `taskEditId` to check if that ID matches one of the tasks being mapped within the current list you're on.
-- Bug => Upon logging `taskEditId` here, there is no data being returned or undefined if I am not currently on the 'today' list.
-  - Logging `taskEditId` on the `App` component is rendering no data as well for the same conditions as stated above.
+  - # Brainstorm:
+    - Each task has a doc field called _list_ which contains the string for the originating list.
+    - Store the _clicked on task ID data within Completed_ to a React state to hold.
+    - Use _list_ field as a parameter for the FS pathway along with the stored task ID.
+    - Using this data, we can reference the originating list and restore the task when task becomes incomplete.

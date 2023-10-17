@@ -25,6 +25,7 @@ export const MappedTodoItems = () => {
   const unsubscribeRef = useRef(null);
   const listItems = ["today", ...customList];
   const everyListItem = [...defaultList, ...customList];
+  const taskOriginatedList = useRef();
 
   useEffect(() => {
     // Ensure that there is only 1 active listener:
@@ -48,7 +49,7 @@ export const MappedTodoItems = () => {
       await deleteDoc(
         doc(db, `todo/${activeUserId}/${selectedList}/${task.id}`)
       );
-      await removeDeletedTasksFromAllLists(activeUserId, task, [everyListItem]);
+      await removeDeletedTasksFromAllLists(activeUserId, task, everyListItem);
       updateCustomListTaskCount(setListCounts, selectedList, "subtract");
     } catch (error) {
       console.log(`Error: ${error} - Occurred @ deleteTask`);
@@ -80,15 +81,24 @@ export const MappedTodoItems = () => {
   const handleTaskCompletion = async (task) => {
     const taskToggledStatus = !task.completed;
     try {
-      updateTodoTasksState(task, !task.complete);
+      updateTodoTasksState(task, !task.completed);
       await toggleTaskCompleteField(activeUserId, selectedList, task);
+      taskOriginatedList.current = task.list;
       if (taskToggledStatus) {
         await moveTaskToCompleted(activeUserId, task, everyListItem);
-        // ! What is this?
-        await deleteDoc(doc(db, `todo/${activeUserId}/urgent/${task.id}`));
+        updateCustomListTaskCount(
+          setListCounts,
+          taskOriginatedList.current,
+          "subtract"
+        );
       } else {
+        updateCustomListTaskCount(
+          setListCounts,
+          taskOriginatedList.current,
+          "add"
+        );
         await moveTaskToToday(activeUserId, task);
-        await moveTaskToUrgent(activeUserId, task);
+        // await moveTaskToUrgent(activeUserId, task);
       }
     } catch (error) {
       console.log(`Error: ${error} - handleTaskCompletion`);
@@ -105,9 +115,9 @@ export const MappedTodoItems = () => {
           (task) => task.showDoc && task.list === listName
         );
 
-        if (tasksForList.length === 0) {
-          return null;
-        }
+        // if (tasksForList.length === 0) {
+        //   return null;
+        // }
 
         return (
           <div key={listName}>

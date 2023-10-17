@@ -434,6 +434,9 @@ li {
   padding: 1rem;
   display: grid;
   grid-template-columns: 1fr min-content;
+  li {
+    text-transform: capitalize;
+  }
   .my-list {
     padding-top: 2rem;
   }

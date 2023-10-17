@@ -33,6 +33,7 @@ export const TodoInput = () => {
     };
     try {
       const { generatedTaskId } = await addTaskToFirestore(todoData);
+      // TODO: Optimize the 2 identical functions below to prevent any *race conditions*:
       addTaskToFirestore({
         ...todoData,
         selectedList: "all",
